@@ -1,7 +1,12 @@
+"use client";
+import { useRouter } from "next/navigation";
 import React from "react";
 import FeatureCard from "./FeatureCard";
+import Button from "./Button";
 
 const Hero = () => {
+  const router = useRouter();
+
   return (
     <div className="font-serif">
       <section className="relative min-h-screen">
@@ -19,9 +24,9 @@ const Hero = () => {
               Discover unparalleled & modern amenities ensuring a memorable
               stay.
             </p>
-            <button className="bg-teal-700 hover:bg-teal-800 px-6 py-2 rounded text-sm text-white">
+            <Button onClick={() => router.push("/properties")}>
               Book Your Stay
-            </button>
+            </Button>{" "}
           </div>
         </div>
       </section>
