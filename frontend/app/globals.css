@@ -1,1 +1,9 @@
 @import "tailwindcss";
+
+body {
+  margin: 0;
+}
+
+.hover-text-shadow:hover {
+  text-shadow: 1px 1px 5px black;
+}
