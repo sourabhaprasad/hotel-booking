@@ -8,7 +8,7 @@ export default function Navbar() {
       <div className="space-x-4">
         {[
           { label: "Home", href: "/" },
-          { label: "List your prop", href: "/list-property" },
+          { label: "View Properties", href: "/all-properties" },
           { label: "Register", href: "/auth/sign-up" },
           { label: "Sign In", href: "/auth/sign-in" },
         ].map((item) => (
