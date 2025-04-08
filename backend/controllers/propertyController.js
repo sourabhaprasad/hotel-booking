@@ -66,32 +66,39 @@ export const updateProperty = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const updatedData = {
+    const updateData = {
       ...req.body,
-      guests: Number(req.body.guests),
-      bedrooms: Number(req.body.bedrooms),
-      bathrooms: Number(req.body.bathrooms),
-      price: Number(req.body.price),
     };
 
-    if (typeof req.body.amenities === "string") {
-      updatedData.amenities = [req.body.amenities];
+    // Validate and convert numeric fields
+    const numericFields = ["guests", "bedrooms", "bathrooms", "price"];
+    for (const field of numericFields) {
+      if (req.body[field] !== undefined) {
+        const value = Number(req.body[field]);
+        if (isNaN(value)) {
+          return res
+            .status(400)
+            .json({ error: `${field} must be a valid number` });
+        }
+        updateData[field] = value;
+      }
     }
 
-    const updatedProperty = await Property.findByIdAndUpdate(id, updatedData, {
+    // Convert amenities to array if needed
+    if (typeof req.body.amenities === "string") {
+      updateData.amenities = req.body.amenities.split(",").map((a) => a.trim());
+    }
+
+    const updated = await Property.findByIdAndUpdate(id, updateData, {
       new: true,
+      runValidators: true,
     });
 
-    if (!updatedProperty) {
+    if (!updated) {
       return res.status(404).json({ error: "Property not found" });
     }
 
-    res
-      .status(200)
-      .json({
-        message: "Property updated successfully",
-        property: updatedProperty,
-      });
+    res.status(200).json({ message: "Property updated", property: updated });
   } catch (err) {
     console.error("Error updating property:", err);
     res.status(500).json({ error: "Failed to update property" });
