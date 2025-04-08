@@ -33,12 +33,21 @@ export default function Navbar() {
         >
           Home
         </Link>
-        <Link
-          href="/all-properties"
-          className="px-3 py-2 rounded-md transition-all duration-300 ease-in-out hover:bg-white/30 hover:scale-110"
-        >
-          View Properties
-        </Link>
+        {user?.role === "manager" ? (
+          <Link
+            href="/upload-property"
+            className="px-3 py-2 rounded-md transition-all duration-300 ease-in-out hover:bg-white/30 hover:scale-110"
+          >
+            Upload Property
+          </Link>
+        ) : (
+          <Link
+            href="/all-properties"
+            className="px-3 py-2 rounded-md transition-all duration-300 ease-in-out hover:bg-white/30 hover:scale-110"
+          >
+            View Properties
+          </Link>
+        )}
 
         {!user ? (
           <>
