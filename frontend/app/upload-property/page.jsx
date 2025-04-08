@@ -1,15 +1,16 @@
 "use client";
 import { useForm } from "react-hook-form";
 import toast, { Toaster } from "react-hot-toast";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { UploadCloud } from "lucide-react";
-import { useRef, useEffect } from "react";
 import Button from "../components/Button";
 
 export default function ListPropertyForm() {
   const {
     register,
     handleSubmit,
+    watch,
+    reset,
     formState: { errors },
   } = useForm();
 
@@ -24,18 +25,56 @@ export default function ListPropertyForm() {
     );
   };
 
-  const onSubmit = (data) => {
-    data.amenities = selectedAmenities; // add manually selected amenities
-    console.log("Form submitted:", data);
-    toast.success("Property submitted successfully!", {
-      position: "top-center",
-    });
+  const onSubmit = async (data) => {
+    try {
+      const formData = new FormData();
+
+      // Append text fields
+      Object.entries(data).forEach(([key, value]) => {
+        if (key !== "images") {
+          formData.append(key, value);
+        }
+      });
+
+      // Append amenities
+      selectedAmenities.forEach((amenity) => {
+        formData.append("amenities[]", amenity);
+      });
+
+      // Append images
+      if (data.images && data.images.length > 0) {
+        for (let i = 0; i < data.images.length; i++) {
+          formData.append("images", data.images[i]);
+        }
+      }
+
+      await toast.promise(
+        fetch("http://localhost:5000/api/properties", {
+          method: "POST",
+          body: formData,
+        }).then(async (res) => {
+          const result = await res.json();
+          if (!res.ok) throw new Error(result.message || "Submission failed");
+          return result;
+        }),
+        {
+          loading: "Submitting...",
+          success: "Property submitted successfully!",
+          error: "Failed to submit property.",
+        }
+      );
+
+      // Reset form and amenities
+      reset();
+      setSelectedAmenities([]);
+    } catch (err) {
+      console.error("Submission error:", err);
+    }
   };
 
-  // Inside your component:
+  // Close amenities dropdown on outside click
   const amenitiesRef = useRef(null);
 
-  // Close dropdown on outside click
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -50,6 +89,8 @@ export default function ListPropertyForm() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const watchImages = watch("images");
+
   return (
     <div className="min-h-screen flex items-center justify-center py-10 px-4">
       <Toaster />
@@ -59,6 +100,7 @@ export default function ListPropertyForm() {
       >
         <h2 className="text-center text-2xl font-bold">List your property</h2>
 
+        {/* Text Fields */}
         {[
           { name: "title", label: "Title", placeholder: "Enter title" },
           {
@@ -115,7 +157,7 @@ export default function ListPropertyForm() {
           </div>
         ))}
 
-        {/* Type - radio buttons */}
+        {/* Property Type */}
         <div>
           <label className="font-semibold">Type:</label>
           <div className="flex gap-6 mt-2">
@@ -138,8 +180,7 @@ export default function ListPropertyForm() {
           )}
         </div>
 
-        {/* Amenities - dropdown with checkboxes */}
-        {/* Amenities - dropdown with checkboxes */}
+        {/* Amenities Dropdown */}
         <div className="relative" ref={amenitiesRef}>
           <label className="font-semibold">Amenities:</label>
           <button
@@ -193,7 +234,13 @@ export default function ListPropertyForm() {
           <label className="font-semibold block mb-2">Upload images:</label>
           <label className="flex items-center justify-center gap-2 px-4 py-3 bg-white/30 rounded-md cursor-pointer hover:bg-white/40 transition-all">
             <UploadCloud className="w-5 h-5" />
-            <span>Choose images</span>
+            <span>
+              {watchImages && watchImages.length > 0
+                ? `${watchImages.length} image${
+                    watchImages.length > 1 ? "s" : ""
+                  } uploaded`
+                : "Choose images"}
+            </span>
             <input
               type="file"
               {...register("images")}
