@@ -1,25 +1,73 @@
 "use client";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Navbar() {
+  const router = useRouter();
+  const [user, setUser] = useState(null);
+
+  // Load user from localStorage
+  useEffect(() => {
+    const storedUser = localStorage.getItem("homestayUser");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("homestayUser");
+    setUser(null);
+    router.push("/auth/sign-in");
+  };
+
   return (
     <nav className="bg-[#0A2239] text-white px-6 py-4 flex justify-between items-center shadow-md">
-      <h1 className="text-xl font-semibold">Homestay Finder</h1>
-      <div className="space-x-4">
-        {[
-          { label: "Home", href: "/" },
-          { label: "View Properties", href: "/all-properties" },
-          { label: "Register", href: "/auth/sign-up" },
-          { label: "Sign In", href: "/auth/sign-in" },
-        ].map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className="px-3 py-2 rounded-md transition-all duration-300 ease-in-out hover:bg-white/30 hover:text-white hover:scale-110 md:hover:text-xl hover-text-shadow"
-          >
-            {item.label}
-          </Link>
-        ))}
+      <Link href="/">
+        <h1 className="text-xl font-semibold">Homestay Finder</h1>
+      </Link>
+      <div className="space-x-4 flex items-center">
+        <Link
+          href="/"
+          className="px-3 py-2 rounded-md transition-all duration-300 ease-in-out hover:bg-white/30 hover:scale-110"
+        >
+          Home
+        </Link>
+        <Link
+          href="/all-properties"
+          className="px-3 py-2 rounded-md transition-all duration-300 ease-in-out hover:bg-white/30 hover:scale-110"
+        >
+          View Properties
+        </Link>
+
+        {!user ? (
+          <>
+            <Link
+              href="/auth/sign-up"
+              className="px-3 py-2 rounded-md transition-all duration-300 ease-in-out hover:bg-white/30 hover:scale-110"
+            >
+              Register
+            </Link>
+            <Link
+              href="/auth/sign-in"
+              className="px-3 py-2 rounded-md transition-all duration-300 ease-in-out hover:bg-white/30 hover:scale-110"
+            >
+              Sign In
+            </Link>
+          </>
+        ) : (
+          <>
+            <span className="font-semibold text-sm px-3 py-2">
+              {user.name.toUpperCase()}
+            </span>
+            <button
+              onClick={handleLogout}
+              className="px-3 py-2 rounded-md text-white hover:bg-red-600 transition"
+            >
+              Logout
+            </button>
+          </>
+        )}
       </div>
     </nav>
   );
