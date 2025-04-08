@@ -24,7 +24,7 @@ const Hero = () => {
               Discover unparalleled & modern amenities ensuring a memorable
               stay.
             </p>
-            <Button onClick={() => router.push("/properties")}>
+            <Button onClick={() => router.push("/all-properties")}>
               Book Your Stay
             </Button>{" "}
           </div>
