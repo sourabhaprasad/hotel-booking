@@ -1,43 +1,34 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import FilterBar from "../components/FilterBar";
 import PropCard from "../components/PropCard";
 
-// Dummy data with all fields
-const dummyProperties = [
-  {
-    _id: "1",
-    title: "Cozy Villa by the Beach",
-    type: "Villa",
-    guestsAllowed: 6,
-    bedrooms: 3,
-    city: "Goa",
-    pricePerNight: 3500,
-  },
-  {
-    _id: "2",
-    title: "Modern Apartment in City Center",
-    type: "Apartment",
-    guestsAllowed: 4,
-    bedrooms: 2,
-    city: "Bangalore",
-    pricePerNight: 2800,
-  },
-  {
-    _id: "3",
-    title: "Spacious House with Garden",
-    type: "House",
-    guestsAllowed: 8,
-    bedrooms: 4,
-    city: "Pune",
-    pricePerNight: 4200,
-  },
-];
-
 const AllPropertiesPage = () => {
-  const properties = dummyProperties;
+  const [properties, setProperties] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchProperties = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/properties");
+        const data = await res.json();
+
+        if (!res.ok) throw new Error(data.message || "Failed to fetch");
+
+        setProperties(data);
+      } catch (err) {
+        console.error("Fetch error:", err.message);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProperties();
+  }, []);
 
   return (
     <>
@@ -45,17 +36,24 @@ const AllPropertiesPage = () => {
         <FilterBar />
       </div>
 
-      {/* Ensure spacing is consistent */}
       <div className="p-6 space-y-6">
-        {properties.map((prop) => (
-          <div key={prop._id}>
-            <Link href={`/property/${prop._id}`}>
-              <div className="hover:scale-[1.01] transition-all">
-                <PropCard property={prop} />
-              </div>
-            </Link>
-          </div>
-        ))}
+        {loading && <p>Loading properties...</p>}
+        {error && <p className="text-red-500">Error: {error}</p>}
+        {!loading && !error && properties.length === 0 && (
+          <p>No properties found.</p>
+        )}
+
+        {!loading &&
+          !error &&
+          properties.map((prop) => (
+            <div key={prop._id}>
+              <Link href={`/property/${prop._id}`}>
+                <div className="hover:scale-[1.01] transition-all">
+                  <PropCard property={prop} />
+                </div>
+              </Link>
+            </div>
+          ))}
       </div>
     </>
   );
