@@ -1,4 +1,3 @@
-// components/PropertyDetails.jsx
 "use client";
 import React, { useState } from "react";
 
@@ -10,7 +9,7 @@ const PropertyDetails = ({ property }) => {
     if (checkIn && checkOut) {
       const diffTime = new Date(checkOut) - new Date(checkIn);
       const diffDays = diffTime / (1000 * 60 * 60 * 24);
-      return diffDays > 0 ? diffDays * property.pricePerNight : 0;
+      return diffDays > 0 ? diffDays * property.price : 0;
     }
     return 0;
   };
@@ -21,19 +20,38 @@ const PropertyDetails = ({ property }) => {
     <div className="bg-[#53A2BE99]/50 p-6 rounded-md flex flex-col md:flex-row gap-6">
       {/* Left - Images */}
       <div className="md:w-[40%] space-y-4">
-        <div className="w-full h-[300px] bg-gray-300 rounded-md" />
-        <div className="flex justify-between gap-4">
-          <div className="w-1/3 h-[100px] bg-gray-300 rounded-md" />
-          <div className="w-1/3 h-[100px] bg-gray-300 rounded-md" />
-          <div className="w-1/3 h-[100px] bg-gray-300 rounded-md" />
-        </div>
+        {property.images?.length > 0 ? (
+          <>
+            {/* Main Image */}
+            <img
+              src={property.images[0]}
+              alt="Main"
+              className="w-full h-[300px] object-cover rounded-md"
+            />
+            {/* Thumbnails */}
+            <div className="flex justify-between gap-4">
+              {property.images.slice(1, 4).map((img, index) => (
+                <img
+                  key={index}
+                  src={img}
+                  alt={`Thumbnail ${index}`}
+                  className="w-1/3 h-[100px] object-cover rounded-md"
+                />
+              ))}
+            </div>
+          </>
+        ) : (
+          <div className="w-full h-[300px] bg-gray-300 rounded-md flex items-center justify-center text-gray-500">
+            No images available
+          </div>
+        )}
       </div>
 
       {/* Right - Details */}
       <div className="md:w-1/2 space-y-3 text-black">
         <div className="flex justify-between">
           <h2 className="font-bold text-xl">{property.title}</h2>
-          <p className="font-bold">₹{property.pricePerNight} / night</p>
+          <p className="font-bold">₹{property.price} / night</p>
         </div>
 
         <p>
@@ -44,8 +62,7 @@ const PropertyDetails = ({ property }) => {
           <span className="font-bold">Type:</span> {property.type}
         </p>
         <p>
-          <span className="font-bold">Guest Allowed:</span>{" "}
-          {property.guestsAllowed}
+          <span className="font-bold">Guest Allowed:</span> {property.guests}
         </p>
         <p>
           <span className="font-bold">No. of bedroom:</span> {property.bedrooms}
@@ -65,7 +82,7 @@ const PropertyDetails = ({ property }) => {
 
         {/* Booking Section */}
         <div className="bg-[#1D84B5]/40 p-3 rounded space-y-2 mt-4">
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             <label className="font-bold">Check In:</label>
             <input
               type="date"
