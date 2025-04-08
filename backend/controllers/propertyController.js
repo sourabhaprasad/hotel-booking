@@ -3,6 +3,13 @@ import Property from "../models/Property.js";
 // POST: Create a new property
 export const createProperty = async (req, res) => {
   try {
+    // ✅ Restrict non-managers
+    if (req.user.role !== "manager") {
+      return res
+        .status(403)
+        .json({ error: "Only property managers can upload" });
+    }
+
     // Get Cloudinary image URLs from uploaded files
     const imageUrls = req.files.map((file) => file.path);
 
@@ -21,12 +28,17 @@ export const createProperty = async (req, res) => {
       propertyData.amenities = [req.body.amenities];
     }
 
-    const newProperty = new Property(propertyData);
-    await newProperty.save();
+    const newProperty = new Property({
+      ...propertyData,
+      user: req.user.id,
+    });
 
-    res
-      .status(201)
-      .json({ message: "Property listed successfully", property: newProperty });
+    const savedProperty = await newProperty.save(); // <- You forgot to save it!
+
+    res.status(201).json({
+      message: "Property listed successfully",
+      property: savedProperty,
+    });
   } catch (err) {
     console.error("Error creating property:", err);
     res
@@ -116,5 +128,18 @@ export const getPropertyById = async (req, res) => {
   } catch (err) {
     console.error("Error fetching property by ID:", err);
     res.status(500).json({ error: "Failed to fetch property" });
+  }
+};
+
+// GET: Fetch properties by logged-in host (Property Manager)
+export const getPropertiesByHost = async (req, res) => {
+  try {
+    const properties = await Property.find({ user: req.user.id }).sort({
+      createdAt: -1,
+    });
+    res.status(200).json(properties);
+  } catch (err) {
+    console.error("Error fetching host properties:", err);
+    res.status(500).json({ error: "Failed to fetch host properties" });
   }
 };
