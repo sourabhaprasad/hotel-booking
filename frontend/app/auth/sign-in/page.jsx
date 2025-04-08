@@ -29,15 +29,15 @@ const SignInPage = () => {
 
       localStorage.setItem("homestayUser", JSON.stringify(user));
       localStorage.setItem("homestayToken", token);
-
+      localStorage.setItem("token", token);
+      console.log("Token being sent:", token);
       toast.success("Logged in successfully!", { position: "top-center" });
 
-      // Redirect based on role
       setTimeout(() => {
         if (user.role === "manager") {
-          router.push("/manager-dashboard"); // You can change this route
+          router.push("/manager-dashboard");
         } else {
-          router.push("/"); // Guest homepage
+          router.push("/");
         }
       }, 1000);
     } catch (err) {
