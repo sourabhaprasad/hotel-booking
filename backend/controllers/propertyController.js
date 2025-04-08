@@ -1,19 +1,15 @@
 import Property from "../models/Property.js";
 
-// POST: Create a new property
 export const createProperty = async (req, res) => {
   try {
-    // ✅ Restrict non-managers
     if (req.user.role !== "manager") {
       return res
         .status(403)
         .json({ error: "Only property managers can upload" });
     }
 
-    // Get Cloudinary image URLs from uploaded files
     const imageUrls = req.files.map((file) => file.path);
 
-    // Parse and sanitize incoming data
     const propertyData = {
       ...req.body,
       images: imageUrls,
@@ -23,7 +19,6 @@ export const createProperty = async (req, res) => {
       price: Number(req.body.price),
     };
 
-    // Handle amenities (may come as a string if one value is selected)
     if (typeof req.body.amenities === "string") {
       propertyData.amenities = [req.body.amenities];
     }
@@ -50,7 +45,34 @@ export const createProperty = async (req, res) => {
 // GET: Fetch all properties
 export const getAllProperties = async (req, res) => {
   try {
-    const properties = await Property.find().sort({ createdAt: -1 });
+    const { city, guests, sortBy, amenities } = req.query;
+
+    let filter = {};
+    if (city) filter.city = new RegExp(city, "i");
+
+    if (guests) {
+      if (guests.includes("-")) {
+        const [minGuests, maxGuests] = guests.split("-").map(Number);
+        filter.guests = { $gte: minGuests, $lte: maxGuests };
+      } else {
+        filter.guests = Number(guests);
+      }
+    }
+
+    if (amenities) {
+      const amenitiesArray = amenities.split(",");
+      filter.amenities = { $all: amenitiesArray };
+    }
+
+    let query = Property.find(filter);
+
+    if (sortBy === "price-low-high") {
+      query = query.sort({ price: 1 });
+    } else if (sortBy === "price-high-low") {
+      query = query.sort({ price: -1 });
+    }
+
+    const properties = await query.exec();
     res.status(200).json(properties);
   } catch (err) {
     console.error("Error fetching properties:", err);
@@ -118,6 +140,8 @@ export const updateProperty = async (req, res) => {
 };
 
 export const getPropertyById = async (req, res) => {
+  console.log("REQ.USER:", req.user); // temp log
+
   try {
     const { id } = req.params;
     const property = await Property.findById(id);
@@ -133,6 +157,8 @@ export const getPropertyById = async (req, res) => {
 
 // GET: Fetch properties by logged-in host (Property Manager)
 export const getPropertiesByHost = async (req, res) => {
+  console.log("Authenticated User:", req.user);
+
   try {
     const properties = await Property.find({ user: req.user.id }).sort({
       createdAt: -1,
