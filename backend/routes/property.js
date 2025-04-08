@@ -28,7 +28,7 @@ router.post("/", protect, upload.array("images", 5), createProperty);
 router.get("/", getAllProperties);
 router.delete("/:id", deleteProperty);
 router.put("/:id", updateProperty);
-router.get("/:id", getPropertyById);
 router.get("/my-properties", protect, getPropertiesByHost);
+router.get("/:id", getPropertyById);
 
 export default router;
