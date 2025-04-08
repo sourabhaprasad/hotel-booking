@@ -11,6 +11,7 @@ const FilterBar = ({ onFilterChange }) => {
   const [showAmenities, setShowAmenities] = useState(false);
 
   const amenitiesRef = useRef(null);
+
   const handleFilter = (e) => {
     e.preventDefault();
     const filters = {
@@ -22,6 +23,17 @@ const FilterBar = ({ onFilterChange }) => {
       selectedAmenities,
     };
     onFilterChange(filters);
+  };
+
+  const handleClearFilters = () => {
+    setCity("");
+    setCheckIn("");
+    setCheckOut("");
+    setGuests("");
+    setSortBy("");
+    setSelectedAmenities([]);
+    setShowAmenities(false);
+    onFilterChange({});
   };
 
   useEffect(() => {
@@ -69,7 +81,6 @@ const FilterBar = ({ onFilterChange }) => {
   return (
     <form onSubmit={handleFilter}>
       <div className="w-full p-4 bg-[#1D84B566] grid grid-cols-6 gap-4 rounded-md">
-        {/* City */}
         <div>
           <label className="block font-semibold mb-1">City:</label>
           <input
@@ -81,7 +92,6 @@ const FilterBar = ({ onFilterChange }) => {
           />
         </div>
 
-        {/* Check In */}
         <div>
           <label className="block font-semibold mb-1">Check In:</label>
           <input
@@ -92,7 +102,6 @@ const FilterBar = ({ onFilterChange }) => {
           />
         </div>
 
-        {/* Check Out */}
         <div>
           <label className="block font-semibold mb-1">Check Out:</label>
           <input
@@ -103,7 +112,6 @@ const FilterBar = ({ onFilterChange }) => {
           />
         </div>
 
-        {/* Guests */}
         <div>
           <label className="block font-semibold mb-1">Guests:</label>
           <select
@@ -119,7 +127,6 @@ const FilterBar = ({ onFilterChange }) => {
           </select>
         </div>
 
-        {/* Sort By */}
         <div>
           <label className="block font-semibold mb-1">Sort By:</label>
           <select
@@ -135,7 +142,6 @@ const FilterBar = ({ onFilterChange }) => {
           </select>
         </div>
 
-        {/* Amenities */}
         <div className="relative" ref={amenitiesRef}>
           <label className="block font-semibold mb-1">Amenities:</label>
           <button
@@ -166,12 +172,20 @@ const FilterBar = ({ onFilterChange }) => {
           )}
         </div>
       </div>
-      <div className="col-span-6 flex justify-center mt-4">
+
+      <div className="col-span-6 flex justify-center mt-4 gap-4">
         <button
-          onClick={handleFilter}
-          className="bg-[#1D84B5] text-white px-6 py-2 rounded-md font-semibold"
+          type="submit"
+          className="bg-[#1D84B5] hover:bg-teal-700 text-white px-6 py-2 rounded-md font-semibold transition duration-200"
         >
           Apply Filters
+        </button>
+        <button
+          type="button"
+          onClick={handleClearFilters}
+          className="bg-gray-300 text-gray-800 px-6 py-2 rounded-md font-semibold hover:bg-gray-800 hover:text-white"
+        >
+          Clear Filters
         </button>
       </div>
     </form>
