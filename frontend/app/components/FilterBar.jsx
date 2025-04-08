@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 
-const FilterBar = () => {
+const FilterBar = ({ onFilterChange }) => {
   const [city, setCity] = useState("");
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
@@ -12,9 +12,7 @@ const FilterBar = () => {
 
   const amenitiesRef = useRef(null);
   const handleFilter = (e) => {
-    e.preventDefault(); // Prevents page reload on form submit
-
-    // You can send these values to your backend or use them to filter locally
+    e.preventDefault();
     const filters = {
       city,
       checkIn,
@@ -23,10 +21,7 @@ const FilterBar = () => {
       sortBy,
       selectedAmenities,
     };
-
-    console.log("Applied Filters:", filters);
-
-    // Later: call API or update state to filter the PropCards
+    onFilterChange(filters);
   };
 
   useEffect(() => {
@@ -72,7 +67,7 @@ const FilterBar = () => {
   ];
 
   return (
-    <>
+    <form onSubmit={handleFilter}>
       <div className="w-full p-4 bg-[#1D84B566] grid grid-cols-6 gap-4 rounded-md">
         {/* City */}
         <div>
@@ -179,7 +174,7 @@ const FilterBar = () => {
           Apply Filters
         </button>
       </div>
-    </>
+    </form>
   );
 };
 
