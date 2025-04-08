@@ -5,6 +5,7 @@ import { CloudinaryStorage } from "multer-storage-cloudinary";
 import {
   createProperty,
   getAllProperties,
+  getPropertyById,
   deleteProperty,
   updateProperty,
 } from "../controllers/propertyController.js";
@@ -25,5 +26,6 @@ router.post("/", upload.array("images", 5), createProperty);
 router.get("/", getAllProperties);
 router.delete("/:id", deleteProperty);
 router.put("/:id", updateProperty);
+router.get("/:id", getPropertyById);
 
 export default router;
