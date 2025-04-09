@@ -30,16 +30,23 @@ const SignInPage = () => {
       localStorage.setItem("homestayUser", JSON.stringify(user));
       localStorage.setItem("homestayToken", token);
       localStorage.setItem("token", token);
+
       console.log("Token being sent:", token);
       toast.success("Logged in successfully!", { position: "top-center" });
-
       setTimeout(() => {
-        if (user.role === "manager") {
-          router.push("/manager-dashboard");
-        } else {
-          router.push("/");
-        }
-      }, 1000);
+        toast("Redirecting...", {
+          icon: "➡️",
+          position: "top-center",
+        });
+
+        setTimeout(() => {
+          if (user.role === "manager") {
+            router.push("/manager-dashboard");
+          } else {
+            router.push("/");
+          }
+        }, 1000);
+      }, 1500);
     } catch (err) {
       toast.error(err.response?.data?.error || "Login failed", {
         position: "top-center",
