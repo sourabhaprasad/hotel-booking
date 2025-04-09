@@ -6,7 +6,7 @@ const PropertyDetails = ({ property, showBooking = true }) => {
   return (
     <div className="bg-[#53A2BE99]/50 p-6 rounded-md flex flex-col md:flex-row gap-6">
       {/* Left - Images */}
-      <div className="md:w-[40%] space-y-4">
+      <div className="md:w-[35%] space-y-4">
         {property.images?.length > 0 ? (
           <>
             <img
@@ -33,7 +33,7 @@ const PropertyDetails = ({ property, showBooking = true }) => {
       </div>
 
       {/* Right - Details */}
-      <div className="md:w-1/2 space-y-3 text-black">
+      <div className=" space-y-3 text-black">
         <div className="flex justify-between">
           <h2 className="font-bold text-xl">{property.title}</h2>
           <p className="font-bold">₹{property.price} / night</p>
@@ -65,8 +65,13 @@ const PropertyDetails = ({ property, showBooking = true }) => {
           {property.contact || "N/A"}
         </p>
 
-        {/* Conditionally render BookingSection */}
-        {showBooking && <BookingSection price={property.price} />}
+        {showBooking && (
+          <BookingSection
+            price={property.price}
+            propertyId={property._id}
+            maxGuests={property.guests}
+          />
+        )}
       </div>
     </div>
   );

@@ -42,10 +42,20 @@ const BookingConfirmation = ({ booking }) => {
           <strong>Pin Code:</strong> {booking.pinCode}
         </p>
         <p>
-          <strong>Check In:</strong> {booking.checkIn}
+          <strong>Check In:</strong>{" "}
+          {new Date(booking.checkIn).toLocaleDateString("en-IN", {
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+          })}
         </p>
         <p>
-          <strong>Check Out:</strong> {booking.checkOut}
+          <strong>Check Out:</strong>{" "}
+          {new Date(booking.checkOut).toLocaleDateString("en-IN", {
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+          })}
         </p>
         <p>
           <strong>Total price:</strong> ₹{booking.totalPrice}
