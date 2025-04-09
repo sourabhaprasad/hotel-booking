@@ -19,7 +19,13 @@ const propertySchema = new mongoose.Schema(
     pincode: { type: String, required: true },
     price: { type: Number, required: true },
     contact: { type: String, required: true },
-    images: { type: [String], required: true }, // cloudinary URLs
+    images: { type: [String], required: true }, // Cloudinary URLs
+
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
   },
   { timestamps: true }
 );

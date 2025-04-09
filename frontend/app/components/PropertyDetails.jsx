@@ -1,34 +1,19 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
+import BookingSection from "./BookingSection";
 
-const PropertyDetails = ({ property }) => {
-  const [checkIn, setCheckIn] = useState("");
-  const [checkOut, setCheckOut] = useState("");
-
-  const handleSearch = () => {
-    if (checkIn && checkOut) {
-      const diffTime = new Date(checkOut) - new Date(checkIn);
-      const diffDays = diffTime / (1000 * 60 * 60 * 24);
-      return diffDays > 0 ? diffDays * property.price : 0;
-    }
-    return 0;
-  };
-
-  const totalPrice = handleSearch();
-
+const PropertyDetails = ({ property, showBooking = true }) => {
   return (
     <div className="bg-[#53A2BE99]/50 p-6 rounded-md flex flex-col md:flex-row gap-6">
       {/* Left - Images */}
       <div className="md:w-[40%] space-y-4">
         {property.images?.length > 0 ? (
           <>
-            {/* Main Image */}
             <img
               src={property.images[0]}
               alt="Main"
               className="w-full h-[300px] object-cover rounded-md"
             />
-            {/* Thumbnails */}
             <div className="flex justify-between gap-4">
               {property.images.slice(1, 4).map((img, index) => (
                 <img
@@ -80,42 +65,8 @@ const PropertyDetails = ({ property }) => {
           {property.contact || "N/A"}
         </p>
 
-        {/* Booking Section */}
-        <div className="bg-[#1D84B5]/40 p-3 rounded space-y-2 mt-4">
-          <div className="flex gap-2 flex-wrap">
-            <label className="font-bold">Check In:</label>
-            <input
-              type="date"
-              className="bg-white px-2 py-1 rounded"
-              value={checkIn}
-              onChange={(e) => setCheckIn(e.target.value)}
-            />
-            <label className="font-bold">Check Out:</label>
-            <input
-              type="date"
-              className="bg-white px-2 py-1 rounded"
-              value={checkOut}
-              onChange={(e) => setCheckOut(e.target.value)}
-            />
-            <button
-              className="bg-[#265073] text-white px-4 py-1 rounded hover:bg-[#1e3a5f]"
-              onClick={handleSearch}
-            >
-              Search
-            </button>
-          </div>
-
-          {totalPrice > 0 && (
-            <div className="flex justify-between items-center">
-              <p className="font-bold">
-                Price for the specified days: ₹{totalPrice}
-              </p>
-              <button className="bg-[#265073] text-white px-4 py-1 rounded hover:bg-[#1e3a5f]">
-                Book now
-              </button>
-            </div>
-          )}
-        </div>
+        {/* Conditionally render BookingSection */}
+        {showBooking && <BookingSection price={property.price} />}
       </div>
     </div>
   );

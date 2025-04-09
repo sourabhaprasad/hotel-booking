@@ -48,9 +48,14 @@ export default function ListPropertyForm() {
         }
       }
 
+      const token = localStorage.getItem("homestayToken");
+
       await toast.promise(
         fetch("http://localhost:5000/api/properties", {
           method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
           body: formData,
         }).then(async (res) => {
           const result = await res.json();

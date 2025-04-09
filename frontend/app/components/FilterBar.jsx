@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 
-const FilterBar = () => {
+const FilterBar = ({ onFilterChange }) => {
   const [city, setCity] = useState("");
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
@@ -11,10 +11,9 @@ const FilterBar = () => {
   const [showAmenities, setShowAmenities] = useState(false);
 
   const amenitiesRef = useRef(null);
-  const handleFilter = (e) => {
-    e.preventDefault(); // Prevents page reload on form submit
 
-    // You can send these values to your backend or use them to filter locally
+  const handleFilter = (e) => {
+    e.preventDefault();
     const filters = {
       city,
       checkIn,
@@ -23,10 +22,18 @@ const FilterBar = () => {
       sortBy,
       selectedAmenities,
     };
+    onFilterChange(filters);
+  };
 
-    console.log("Applied Filters:", filters);
-
-    // Later: call API or update state to filter the PropCards
+  const handleClearFilters = () => {
+    setCity("");
+    setCheckIn("");
+    setCheckOut("");
+    setGuests("");
+    setSortBy("");
+    setSelectedAmenities([]);
+    setShowAmenities(false);
+    onFilterChange({});
   };
 
   useEffect(() => {
@@ -72,9 +79,8 @@ const FilterBar = () => {
   ];
 
   return (
-    <>
+    <form onSubmit={handleFilter}>
       <div className="w-full p-4 bg-[#1D84B566] grid grid-cols-6 gap-4 rounded-md">
-        {/* City */}
         <div>
           <label className="block font-semibold mb-1">City:</label>
           <input
@@ -86,7 +92,6 @@ const FilterBar = () => {
           />
         </div>
 
-        {/* Check In */}
         <div>
           <label className="block font-semibold mb-1">Check In:</label>
           <input
@@ -97,7 +102,6 @@ const FilterBar = () => {
           />
         </div>
 
-        {/* Check Out */}
         <div>
           <label className="block font-semibold mb-1">Check Out:</label>
           <input
@@ -108,7 +112,6 @@ const FilterBar = () => {
           />
         </div>
 
-        {/* Guests */}
         <div>
           <label className="block font-semibold mb-1">Guests:</label>
           <select
@@ -124,7 +127,6 @@ const FilterBar = () => {
           </select>
         </div>
 
-        {/* Sort By */}
         <div>
           <label className="block font-semibold mb-1">Sort By:</label>
           <select
@@ -140,7 +142,6 @@ const FilterBar = () => {
           </select>
         </div>
 
-        {/* Amenities */}
         <div className="relative" ref={amenitiesRef}>
           <label className="block font-semibold mb-1">Amenities:</label>
           <button
@@ -171,15 +172,23 @@ const FilterBar = () => {
           )}
         </div>
       </div>
-      <div className="col-span-6 flex justify-center mt-4">
+
+      <div className="col-span-6 flex justify-center mt-4 gap-4">
         <button
-          onClick={handleFilter}
-          className="bg-[#1D84B5] text-white px-6 py-2 rounded-md font-semibold"
+          type="submit"
+          className="bg-[#1D84B5] hover:bg-teal-700 text-white px-6 py-2 rounded-md font-semibold transition duration-200"
         >
           Apply Filters
         </button>
+        <button
+          type="button"
+          onClick={handleClearFilters}
+          className="bg-gray-300 text-gray-800 px-6 py-2 rounded-md font-semibold hover:bg-gray-800 hover:text-white"
+        >
+          Clear Filters
+        </button>
       </div>
-    </>
+    </form>
   );
 };
 
