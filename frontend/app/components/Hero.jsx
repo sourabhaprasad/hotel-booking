@@ -1,14 +1,24 @@
 "use client";
 import { useRouter } from "next/navigation";
 import React from "react";
-import FeatureCard from "./FeatureCard";
 import Button from "./Button";
+
+const FeatureCard = ({ icon, title, description }) => {
+  return (
+    <div className="w-72 h-60 bg-black/40 rounded-xl p-6 text-white text-center flex flex-col items-center justify-center space-y-4 shadow-md transition-transform hover:scale-105">
+      <div className="text-4xl">{icon}</div>
+      <h3 className="font-bold text-lg">{title}</h3>
+      <p className="text-sm">{description}</p>
+    </div>
+  );
+};
 
 const Hero = () => {
   const router = useRouter();
 
   return (
     <div className="font-serif">
+      {/* First Section */}
       <section className="relative min-h-screen">
         <img
           src="/images/hero1.jpg"
@@ -24,13 +34,14 @@ const Hero = () => {
               Discover unparalleled & modern amenities ensuring a memorable
               stay.
             </p>
-            <Button onClick={() => router.push("/properties")}>
+            <Button onClick={() => router.push("/auth/sign-up")}>
               Book Your Stay
-            </Button>{" "}
+            </Button>
           </div>
         </div>
       </section>
 
+      {/* Second Section */}
       <section className="relative min-h-screen">
         <img
           src="/images/hero2.jpeg"
