@@ -18,7 +18,7 @@ export default function Navbar() {
   const handleLogout = () => {
     localStorage.removeItem("homestayUser");
     setUser(null);
-    router.push("/auth/sign-in");
+    router.push("/");
   };
 
   return (
