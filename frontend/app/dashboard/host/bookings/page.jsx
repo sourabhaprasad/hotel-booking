@@ -1,11 +1,15 @@
 "use client";
 
+import PropertyList from "../components/PropertyList";
 import BookingsReceived from "../components/BookingsReceived";
 
-export default function HostPropertiesPage() {
+export default function HostDashboardPage() {
   return (
-    <div>
-      <BookingsReceived />
+    <div className="min-h-screen bg-gray-100 p-6 flex flex-col items-center justify-start">
+      <div className="w-full max-w-4xl space-y-6">
+        <PropertyList />
+        <BookingsReceived />
+      </div>
     </div>
   );
 }

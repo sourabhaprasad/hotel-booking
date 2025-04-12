@@ -55,8 +55,8 @@ const PropertyList = () => {
               <span className="font-semibold">Type:</span> {property.type}
             </p>
             <p>
-              <span className="font-semibold">Price:</span> ₹
-              {property.pricePerNight} / night
+              <span className="font-semibold">Price:</span> ₹{property.price} /
+              night
             </p>
             <p>
               <span className="font-semibold">Location:</span>{" "}
