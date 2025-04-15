@@ -66,9 +66,21 @@ export default function Navbar() {
           </>
         ) : (
           <>
-            <span className="font-semibold text-sm px-3 py-2">
-              {user.name.toUpperCase()}
-            </span>
+            {user?.role === "manager" ? (
+              <Link
+                href="/dashboard/host"
+                className="font-semibold text-sm px-3 py-2"
+              >
+                {user.name.toUpperCase()}
+              </Link>
+            ) : (
+              <Link
+                href="/dashboard/user"
+                className="font-semibold text-sm px-3 py-2"
+              >
+                {user.name.toUpperCase()}
+              </Link>
+            )}
             <button
               onClick={handleLogout}
               className="px-3 py-2 rounded-md text-white hover:bg-red-600 transition"
