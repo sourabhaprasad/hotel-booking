@@ -43,7 +43,7 @@ const SignInPage = () => {
           if (user.role === "manager") {
             router.push("/dashboard/host");
           } else {
-            router.push("/");
+            router.push("/all-properties");
           }
         }, 1000);
       }, 1500);

@@ -97,16 +97,24 @@ export const createBooking = async (req, res) => {
 };
 
 export const getUserBookings = async (req, res) => {
-  console.log("Logged-in user details:", req.user);
+  console.log("User in request:", req.user); // Log user info
 
   try {
     const bookings = await Booking.find({ user: req.user.id })
       .populate("property")
       .sort({ checkIn: 1 });
+    console.log("Bookings found:", bookings); // Log found bookings
+
+    if (!bookings || bookings.length === 0) {
+      return res
+        .status(404)
+        .json({ error: "No bookings found for this user." });
+    }
 
     res.status(200).json(bookings);
   } catch (err) {
-    res.status(500).json({ error: "Failed to fetch bookings: ", err });
+    console.error("Error fetching bookings:", err); // Log errors
+    res.status(500).json({ error: "Failed to fetch bookings." });
   }
 };
 
