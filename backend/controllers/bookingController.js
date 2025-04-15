@@ -1,9 +1,8 @@
 import Booking from "../models/Booking.js";
 import Property from "../models/Property.js";
+import { sendEmail } from "../utils/sendEmail.js";
 
 export const createBooking = async (req, res) => {
-  console.log("Logged-in user details:", req.user);
-
   try {
     const { propertyId, checkIn, checkOut, guests } = req.body;
 
@@ -17,18 +16,21 @@ export const createBooking = async (req, res) => {
       });
     }
 
-    // 1. Find the property
-    const property = await Property.findById(propertyId);
+    // 1. Find the property + populate host (manager)
+    const property = await Property.findById(propertyId).populate(
+      "user",
+      "email name"
+    );
     if (!property) return res.status(404).json({ error: "Property not found" });
 
-    // 2. Validate check-in/check-out dates
+    // 2. Check date logic
     if (new Date(checkOut) <= new Date(checkIn)) {
       return res
         .status(400)
         .json({ error: "Check-out must be after check-in." });
     }
 
-    // 3. Validate guest limit
+    // 3. Guest limit
     if (guests > property.guests) {
       return res.status(400).json({
         error: "Number of guests exceeds limit for this property.",
@@ -52,20 +54,17 @@ export const createBooking = async (req, res) => {
       });
     }
 
-    // 5. Calculate price
+    // 5. Price calculation
     const days =
       (new Date(checkOut) - new Date(checkIn)) / (1000 * 60 * 60 * 24);
     let totalPrice = days * property.price;
 
-    if (days > 30) {
-      totalPrice *= 0.8; // 20% discount
-    } else if (days > 7) {
-      totalPrice *= 0.9; // 10% discount
-    }
+    if (days > 30) totalPrice *= 0.8;
+    else if (days > 7) totalPrice *= 0.9;
 
-    // 6. Create the booking
+    // 6. Create booking
     const booking = await Booking.create({
-      property: propertyId,
+      property: property._id,
       user: req.user.id,
       checkIn,
       checkOut,
@@ -73,22 +72,64 @@ export const createBooking = async (req, res) => {
       totalPrice,
     });
 
-    // 7. Send confirmation response
+    // 7. Email content
+    const guestName = req.user.name || "Guest"; // Use logged-in user's name
+    const hostName = property.user.name || "Host"; // Use the property manager's name (host)
+
+    const guestEmailContent = `
+<h2>Your Booking is Confirmed 🎉</h2>
+<p>Hi ${guestName},</p>
+<p>Thank you for booking with <strong>HomeStay Finder</strong>!</p>
+<p>Here are your booking details:</p>
+<ul>
+  <li><strong>Property:</strong> ${property.title}</li>
+  <li><strong>Address:</strong> ${property.address}</li>
+  <li><strong>Check-in:</strong> ${new Date(checkIn).toDateString()}</li>
+  <li><strong>Check-out:</strong> ${new Date(checkOut).toDateString()}</li>
+  <li><strong>Guests:</strong> ${guests}</li>
+  <li><strong>Total Price:</strong> ₹${totalPrice}</li>
+</ul>
+<br/>
+<p>If you have any questions, feel free to contact the property host.</p>
+<p>Enjoy your stay!</p>
+`;
+
+    const hostEmailContent = `
+<h2>New Booking Received 🛎️</h2>
+<p>Hi ${hostName},</p>
+<p>You have a new booking at your property: <strong>${
+      property.title
+    }</strong>.</p>
+<p>Booking details:</p>
+<ul>
+  <li><strong>Guest:</strong> ${guestName} (${req.user.email})</li>
+  <li><strong>Check-in:</strong> ${new Date(checkIn).toDateString()}</li>
+  <li><strong>Check-out:</strong> ${new Date(checkOut).toDateString()}</li>
+  <li><strong>Guests:</strong> ${guests}</li>
+  <li><strong>Total Price:</strong> ₹${totalPrice}</li>
+</ul>
+<br/>
+<p>Please prepare the property accordingly.</p>
+`;
+
+    // 8. Send to guest
+    await sendEmail({
+      to: req.user.email,
+      subject: "Booking Confirmed!",
+      html: guestEmailContent,
+    });
+
+    // 9. Send to host/manager
+    await sendEmail({
+      to: property.user.email,
+      subject: `New Booking: ${property.title}`,
+      html: hostEmailContent,
+    });
+
+    // 10. Response
     res.status(201).json({
       message: "Booking confirmed",
-      booking: {
-        _id: booking._id,
-        property: {
-          title: property.title,
-          pricePerNight: property.price,
-          images: property.images,
-          address: property.address,
-        },
-        checkIn,
-        checkOut,
-        guests,
-        totalPrice,
-      },
+      booking,
     });
   } catch (err) {
     console.error("Booking Error:", err);
@@ -133,15 +174,8 @@ export const getConfirmedBooking = async (req, res) => {
       return res.status(404).json({ error: "No confirmed booking found." });
     }
 
-    const {
-      title,
-      type,
-      address,
-      city,
-      state,
-      pinCode,
-      price: pricePerNight,
-    } = booking.property;
+    const { title, type, address, city, state, pinCode, price } =
+      booking.property;
 
     res.status(200).json({
       booking: {
