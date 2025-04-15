@@ -2,6 +2,8 @@ import Booking from "../models/Booking.js";
 import Property from "../models/Property.js";
 
 export const createBooking = async (req, res) => {
+  console.log("Logged-in user details:", req.user);
+
   try {
     const { propertyId, checkIn, checkOut, guests } = req.body;
 
@@ -9,12 +11,10 @@ export const createBooking = async (req, res) => {
       return res.status(401).json({ error: "Unauthorized. Please log in." });
     }
 
-    if (req.user.role !== "Guest") {
-      return res
-        .status(403)
-        .json({
-          error: "Only logged in guests can book properties. Please sign in.",
-        });
+    if (req.user.role !== "guest") {
+      return res.status(403).json({
+        error: "Only logged in guests can book properties. Please sign in.",
+      });
     }
 
     // 1. Find the property
@@ -91,6 +91,8 @@ export const createBooking = async (req, res) => {
 };
 
 export const getUserBookings = async (req, res) => {
+  console.log("Logged-in user details:", req.user);
+
   try {
     const bookings = await Booking.find({ user: req.user.id })
       .populate("property")
@@ -144,5 +146,30 @@ export const getConfirmedBooking = async (req, res) => {
   } catch (err) {
     console.error("Error fetching confirmed booking:", err);
     res.status(500).json({ error: "Server error while fetching booking" });
+  }
+};
+
+export const getHostBookings = async (req, res) => {
+  console.log("Logged-in Manager ID:", req.user.id);
+
+  try {
+    if (req.user.role !== "manager") {
+      return res.status(403).json({ error: "Access denied. Managers only." });
+    }
+
+    const properties = await Property.find({ user: req.user.id }).select("_id");
+    console.log("Properties owned by manager:", properties);
+
+    const propertyIds = properties.map((property) => property._id);
+
+    const bookings = await Booking.find({ property: { $in: propertyIds } })
+      .populate("property", "title address price")
+      .populate("user", "name email")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json(bookings);
+  } catch (err) {
+    console.error("Error fetching host bookings:", err);
+    res.status(500).json({ error: "Server error while fetching bookings" });
   }
 };

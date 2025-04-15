@@ -3,6 +3,7 @@ import User from "../models/User.js";
 
 export const protect = async (req, res, next) => {
   let token;
+
   if (
     req.headers.authorization &&
     req.headers.authorization.startsWith("Bearer")
@@ -14,7 +15,13 @@ export const protect = async (req, res, next) => {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       console.log("Decoded token:", decoded);
 
-      req.user = await User.findById(decoded.id).select("-password");
+      const user = await User.findById(decoded.id).select("-password");
+
+      if (!user) {
+        return res.status(401).json({ error: "User not found" });
+      }
+
+      req.user = user;
       next();
     } catch (err) {
       console.error("JWT verification error:", err.message);
