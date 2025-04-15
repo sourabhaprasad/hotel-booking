@@ -1,80 +1,86 @@
 "use client";
-import React from "react";
-import BookingSection from "./BookingSection";
 
-const PropertyDetails = ({ property, showBooking = true }) => {
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import PropertyDetails from "./PropertyDetails"; // Import the PropertyDetails component
+
+const PropertyList = () => {
+  const [properties, setProperties] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
+  useEffect(() => {
+    const fetchHostProperties = async () => {
+      try {
+        const token = localStorage.getItem("token");
+
+        // Redirect if token is missing
+        if (!token) {
+          router.push("/login"); // Assuming you have a login route
+          return;
+        }
+
+        const res = await fetch(
+          "http://localhost:5000/api/properties/my-properties",
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        // Check for any errors in response
+        if (!res.ok) {
+          const errorDetails = await res.json();
+          throw new Error(
+            errorDetails.error || "Failed to fetch host properties"
+          );
+        }
+
+        const data = await res.json();
+        setProperties(data);
+      } catch (error) {
+        console.error("Error fetching host properties:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHostProperties();
+  }, []); // Use empty dependency array to run once on mount
+
+  if (loading) return <div className="p-6">Loading your properties...</div>;
+
+  if (properties.length === 0)
+    return <div className="p-6">No properties listed yet.</div>;
+
   return (
-    <div className="bg-[#53A2BE99]/50 p-6 rounded-md flex flex-col md:flex-row gap-6">
-      {/* Left - Images */}
-      <div className="md:w-[35%] space-y-4">
-        {property.images?.length > 0 ? (
-          <>
-            <img
-              src={property.images[0]}
-              alt="Main"
-              className="w-full h-[300px] object-cover rounded-md"
-            />
-            <div className="flex justify-between gap-4">
-              {property.images.slice(1, 4).map((img, index) => (
-                <img
-                  key={index}
-                  src={img}
-                  alt={`Thumbnail ${index}`}
-                  className="w-1/3 h-[100px] object-cover rounded-md"
-                />
-              ))}
-            </div>
-          </>
-        ) : (
-          <div className="w-full h-[300px] bg-gray-300 rounded-md flex items-center justify-center text-gray-500">
-            No images available
-          </div>
-        )}
+    <div className="bg-[#d1ecf3] min-h-screen p-6">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-xl font-bold">All Listings</h2>
+        <button
+          onClick={() => router.push("/upload-property")}
+          className="bg-[#0b4c61] text-white px-3 py-1 text-sm"
+        >
+          Add Property
+        </button>
       </div>
 
-      {/* Right - Details */}
-      <div className=" space-y-3 text-black">
-        <div className="flex justify-between">
-          <h2 className="font-bold text-xl">{property.title}</h2>
-          <p className="font-bold">₹{property.price} / night</p>
-        </div>
-
-        <p>
-          <span className="font-bold">Description:</span>{" "}
-          {property.description || "N/A"}
-        </p>
-        <p>
-          <span className="font-bold">Type:</span> {property.type}
-        </p>
-        <p>
-          <span className="font-bold">Guest Allowed:</span> {property.guests}
-        </p>
-        <p>
-          <span className="font-bold">No. of bedroom:</span> {property.bedrooms}
-        </p>
-        <p>
-          <span className="font-bold">Amenities:</span>{" "}
-          {property.amenities?.join(", ") || "N/A"}
-        </p>
-        <p>
-          <span className="font-bold">Address:</span>{" "}
-          {property.address || "N/A"}
-        </p>
-        <p>
-          <span className="font-bold">Contact:</span>{" "}
-          {property.contact || "N/A"}
-        </p>
-
-        {showBooking && (
-          <BookingSection
-            price={property.price}
-            propertyId={property._id}
-            maxGuests={property.guests}
-          />
-        )}
+      <div className="space-y-10">
+        {properties.map((property) => (
+          <div
+            key={property._id}
+            className="bg-[#d1ecf3] border-t border-gray-300 pt-6"
+          >
+            <PropertyDetails property={property} showBooking={false} />
+            {/* You can choose to set showBooking={true} if you want to include booking functionality */}
+          </div>
+        ))}
       </div>
     </div>
   );
 };
 
-export default PropertyDetails;
+export default PropertyList;

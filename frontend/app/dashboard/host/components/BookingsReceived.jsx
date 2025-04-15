@@ -60,8 +60,7 @@ const BookingsReceived = () => {
               {new Date(booking.checkOut).toLocaleDateString()}
             </p>
             <p>
-              <span className="font-semibold">Guests:</span>{" "}
-              {booking.totalGuests}
+              <span className="font-semibold">Guests:</span> {booking.guests}
             </p>
             <p>
               <span className="font-semibold">Total Price:</span> ₹
