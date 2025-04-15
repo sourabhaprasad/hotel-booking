@@ -9,12 +9,7 @@ const bookingSchema = new mongoose.Schema(
     },
     user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User", // This would be the guest
-      required: true,
-    },
-    host: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User", // This would be the host
+      ref: "User",
       required: true,
     },
     checkIn: { type: Date, required: true },

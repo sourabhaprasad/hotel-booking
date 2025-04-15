@@ -29,12 +29,10 @@ const BookingConfirmation = ({ booking }) => {
           Booking Confirmed!
         </h2>
 
-        {/* Success Image */}
         <div className="flex justify-center mb-4">
           <img src="/images/verified.png" alt="Success" className="w-24 h-24" />
         </div>
 
-        {/* Booking Info */}
         <div className="space-y-1 text-lg">
           <p>
             <strong>Title:</strong> {booking.title}
