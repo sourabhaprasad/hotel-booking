@@ -62,14 +62,14 @@ const BookingConfirmation = ({ booking }) => {
         </p>
       </div>
 
-      <div className="text-center mt-4">
+      {/* <div className="text-center mt-4">
         <button
           className="bg-[#265073] text-white px-6 py-2 rounded hover:bg-[#1e3a5f]"
           onClick={handleDownload}
         >
           Save as PDF
         </button>
-      </div>
+      </div> */}
     </div>
   );
 };

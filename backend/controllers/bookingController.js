@@ -55,7 +55,13 @@ export const createBooking = async (req, res) => {
     // 5. Calculate price
     const days =
       (new Date(checkOut) - new Date(checkIn)) / (1000 * 60 * 60 * 24);
-    const totalPrice = days * property.price;
+    let totalPrice = days * property.price;
+
+    if (days > 30) {
+      totalPrice *= 0.8; // 20% discount
+    } else if (days > 7) {
+      totalPrice *= 0.9; // 10% discount
+    }
 
     // 6. Create the booking
     const booking = await Booking.create({

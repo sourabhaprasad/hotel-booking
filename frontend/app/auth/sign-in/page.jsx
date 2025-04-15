@@ -41,7 +41,7 @@ const SignInPage = () => {
 
         setTimeout(() => {
           if (user.role === "manager") {
-            router.push("/manager-dashboard");
+            router.push("/dashboard/host");
           } else {
             router.push("/");
           }

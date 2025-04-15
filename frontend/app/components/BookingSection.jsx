@@ -7,6 +7,7 @@ const BookingSection = ({ price, propertyId, maxGuests }) => {
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
   const [guests, setGuests] = useState(1);
+  const [userRole, setUserRole] = useState(""); // Assuming userRole is needed elsewhere
   const router = useRouter();
 
   useEffect(() => {
@@ -21,12 +22,26 @@ const BookingSection = ({ price, propertyId, maxGuests }) => {
     if (checkIn && checkOut) {
       const diffTime = new Date(checkOut) - new Date(checkIn);
       const diffDays = diffTime / (1000 * 60 * 60 * 24);
-      return diffDays > 0 ? diffDays * price : 0;
+
+      if (diffDays > 0) {
+        let totalPrice = diffDays * price;
+        let discountMessage = "";
+
+        if (diffDays >= 30) {
+          totalPrice = totalPrice * 0.8; // 20% discount
+          discountMessage = "20% discount applied";
+        } else if (diffDays >= 7) {
+          totalPrice = totalPrice * 0.9; // 10% discount
+          discountMessage = "10% discount applied";
+        }
+
+        return { totalPrice, discountMessage };
+      }
     }
-    return 0;
+    return { totalPrice: 0, discountMessage: "" };
   };
 
-  const totalPrice = calculateTotalPrice();
+  const { totalPrice, discountMessage } = calculateTotalPrice();
 
   const handleBooking = async () => {
     const token = localStorage.getItem("token");
@@ -65,7 +80,7 @@ const BookingSection = ({ price, propertyId, maxGuests }) => {
   };
 
   return (
-    <div className="bg-[#1D84B5]/40 p-3 rounded space-y-2 mt-4">
+    <div className="bg-[#1D84B5]/20 p-3 rounded space-y-2 mt-4">
       <div className="flex gap-4 flex-wrap items-center">
         <div className="flex items-center gap-2">
           <label className="font-bold whitespace-nowrap">Check In:</label>
@@ -102,7 +117,12 @@ const BookingSection = ({ price, propertyId, maxGuests }) => {
 
       {totalPrice > 0 && (
         <div className="flex justify-between items-center mt-2">
-          <p className="font-bold">Total price: ₹{totalPrice}</p>
+          <div>
+            <p className="font-bold">Total price: ₹{totalPrice}</p>
+            {discountMessage && (
+              <p className="text-green-700 font-bold">{discountMessage}</p>
+            )}
+          </div>
           <button
             onClick={handleBooking}
             className="bg-[#265073] text-white px-4 py-1 rounded hover:bg-[#1e3a5f]"
