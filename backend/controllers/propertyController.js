@@ -97,14 +97,22 @@ export const deleteProperty = async (req, res) => {
 
 // PUT: Update a property by ID
 export const updateProperty = async (req, res) => {
+  console.log("Request body:", req.body);
+
   try {
     const { id } = req.params;
 
     const updateData = {
       ...req.body,
     };
+    if ("images" in req.body && Array.isArray(req.body.images)) {
+      updateData.images = req.body.images.filter(
+        (img) => img !== null && img !== ""
+      );
+    } else {
+      console.log("No valid images array received.");
+    }
 
-    // Validate and convert numeric fields
     const numericFields = ["guests", "bedrooms", "bathrooms", "price"];
     for (const field of numericFields) {
       if (req.body[field] !== undefined) {
@@ -118,7 +126,6 @@ export const updateProperty = async (req, res) => {
       }
     }
 
-    // Convert amenities to array if needed
     if (typeof req.body.amenities === "string") {
       updateData.amenities = req.body.amenities.split(",").map((a) => a.trim());
     }

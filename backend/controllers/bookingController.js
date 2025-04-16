@@ -16,10 +16,10 @@ export const createBooking = async (req, res) => {
       });
     }
 
-    // 1. Find the property + populate host (manager)
+    // 1. Find the property + populate the manager (host)
     const property = await Property.findById(propertyId).populate(
       "user",
-      "email name"
+      "name email"
     );
     if (!property) return res.status(404).json({ error: "Property not found" });
 
@@ -73,8 +73,8 @@ export const createBooking = async (req, res) => {
     });
 
     // 7. Email content
-    const guestName = req.user.name || "Guest"; // Use logged-in user's name
-    const hostName = property.user.name || "Host"; // Use the property manager's name (host)
+    const guestName = req.user.name || "Guest";
+    const managerName = property.user?.name || "Manager";
 
     const guestEmailContent = `
 <h2>Your Booking is Confirmed 🎉</h2>
@@ -90,14 +90,14 @@ export const createBooking = async (req, res) => {
   <li><strong>Total Price:</strong> ₹${totalPrice}</li>
 </ul>
 <br/>
-<p>If you have any questions, feel free to contact the property host.</p>
+<p>If you have any questions, feel free to reach out to our team.</p>
 <p>Enjoy your stay!</p>
 `;
 
-    const hostEmailContent = `
+    const managerEmailContent = `
 <h2>New Booking Received 🛎️</h2>
-<p>Hi ${hostName},</p>
-<p>You have a new booking at your property: <strong>${
+<p>Hi ${managerName},</p>
+<p>You have a new booking for your property: <strong>${
       property.title
     }</strong>.</p>
 <p>Booking details:</p>
@@ -109,24 +109,26 @@ export const createBooking = async (req, res) => {
   <li><strong>Total Price:</strong> ₹${totalPrice}</li>
 </ul>
 <br/>
-<p>Please prepare the property accordingly.</p>
+<p>Please make the necessary preparations.</p>
 `;
 
-    // 8. Send to guest
+    // 8. Send confirmation to guest
     await sendEmail({
       to: req.user.email,
       subject: "Booking Confirmed!",
       html: guestEmailContent,
     });
 
-    // 9. Send to host/manager
-    await sendEmail({
-      to: property.user.email,
-      subject: `New Booking: ${property.title}`,
-      html: hostEmailContent,
-    });
+    // 9. Send booking alert to manager
+    if (property.user?.email) {
+      await sendEmail({
+        to: property.user.email,
+        subject: `New Booking: ${property.title}`,
+        html: managerEmailContent,
+      });
+    }
 
-    // 10. Response
+    // 10. Final response
     res.status(201).json({
       message: "Booking confirmed",
       booking,

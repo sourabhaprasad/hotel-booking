@@ -3,26 +3,18 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { useForm } from "react-hook-form";
+import { UploadCloud } from "lucide-react";
+import Button from "@/app/components/Button";
 
 const UpdateProperty = ({ params }) => {
   const { id } = params; // Extract the property ID from the URL params
   const router = useRouter();
   const [property, setProperty] = useState(null);
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    type: "",
-    guests: "",
-    bedrooms: "",
-    bathrooms: "",
-    price: "",
-    amenities: "",
-    address: "",
-    city: "",
-    contact: "",
-    images: [],
-  });
   const [loading, setLoading] = useState(true);
+  const { register, handleSubmit, setValue, watch, reset } = useForm();
+  const [selectedAmenities, setSelectedAmenities] = useState([]);
+  const [showAmenities, setShowAmenities] = useState(false);
 
   useEffect(() => {
     const fetchProperty = async () => {
@@ -40,7 +32,7 @@ const UpdateProperty = ({ params }) => {
 
         const data = await res.json();
         setProperty(data);
-        setFormData({
+        reset({
           title: data.title,
           description: data.description,
           type: data.type,
@@ -52,7 +44,7 @@ const UpdateProperty = ({ params }) => {
           address: data.address,
           city: data.city,
           contact: data.contact || "",
-          images: data.images || [],
+          images: data.images || [], // Ensure images is an empty array if no images
         });
       } catch (err) {
         console.error("Error fetching property:", err);
@@ -63,73 +55,69 @@ const UpdateProperty = ({ params }) => {
     };
 
     fetchProperty();
-  }, [id]);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+  }, [id, reset]);
 
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("upload_preset", "your_cloudinary_preset"); // Use your Cloudinary preset
+    formData.append("upload_preset", "unsigned_preset");
 
     try {
       const res = await fetch(
-        "https://api.cloudinary.com/v1_1/your_cloudinary_name/image/upload",
+        `https://api.cloudinary.com/v1_1/dusoaobns/image/upload`,
         {
           method: "POST",
           body: formData,
         }
       );
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData?.error?.message || "Failed to upload image");
+      }
+
       const data = await res.json();
-      setFormData((prev) => ({
-        ...prev,
-        images: [...prev.images, data.secure_url],
-      }));
-      toast.success("Image uploaded successfully");
+
+      // Check if response contains a valid URL
+      if (data?.secure_url) {
+        const currentImages = watch("images") || [];
+        // Remove any null or empty values and add the new image URL
+        const updatedImages = currentImages
+          .filter((img) => img !== null && img !== "")
+          .concat(data.secure_url);
+        setValue("images", updatedImages); // Ensure only valid URLs are added
+        toast.success("Image uploaded successfully");
+      } else {
+        toast.error("Failed to upload image, please try again.");
+      }
     } catch (err) {
       console.error("Error uploading image:", err);
-      toast.error("Failed to upload image");
+      toast.error(err.message || "Failed to upload image");
     }
   };
 
-  const handleImageDelete = async (imgUrl) => {
-    try {
-      const token = localStorage.getItem("token");
-      const res = await fetch(
-        `http://localhost:5000/api/properties/delete-image`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ imageUrl: imgUrl }),
-        }
-      );
-
-      if (!res.ok) throw new Error("Failed to delete image");
-
-      setFormData((prev) => ({
-        ...prev,
-        images: prev.images.filter((img) => img !== imgUrl),
-      }));
-      toast.success("Image deleted successfully");
-    } catch (err) {
-      console.error("Error deleting image:", err);
-      toast.error("Failed to delete image");
-    }
+  const handleImageDelete = (imgUrl) => {
+    const updatedImages = watch("images").filter((img) => img !== imgUrl);
+    setValue("images", updatedImages);
+    toast.success("Image deleted successfully");
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const toggleAmenity = (amenity) => {
+    setSelectedAmenities((prev) =>
+      prev.includes(amenity)
+        ? prev.filter((item) => item !== amenity)
+        : [...prev, amenity]
+    );
+  };
 
+  const onSubmit = async (data) => {
     const updatedData = {
-      ...formData,
-      amenities: formData.amenities.split(",").map((a) => a.trim()),
+      ...data,
+      amenities: selectedAmenities,
+      images: (watch("images") || []).filter(
+        (img) => img !== null && img !== ""
+      ), // Ensure no null images
     };
 
     try {
@@ -156,213 +144,153 @@ const UpdateProperty = ({ params }) => {
   if (loading) return <div className="p-6">Loading property data...</div>;
 
   return (
-    <div className="bg-[#d1ecf3] min-h-screen p-6">
-      <h2 className="text-xl font-bold mb-6">Update Property</h2>
-      <form onSubmit={handleSubmit} className="space-y-6 max-w-4xl mx-auto">
-        <div>
-          <label htmlFor="title" className="block">
-            Title
-          </label>
-          <input
-            type="text"
-            id="title"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-            className="w-full p-3 mt-2 border rounded"
-          />
-        </div>
+    <div className="min-h-screen flex items-center justify-center py-10 px-4">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="bg-[#53A2BE]/30 rounded-xl p-10 w-full max-w-3xl space-y-6 shadow-xl"
+      >
+        <h2 className="text-center text-2xl font-bold">Update Property</h2>
 
-        <div>
-          <label htmlFor="description" className="block">
-            Description
-          </label>
-          <textarea
-            id="description"
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            className="w-full p-3 mt-2 border rounded"
-          />
-        </div>
-
-        <div>
-          <label htmlFor="type" className="block">
-            Property Type
-          </label>
-          <input
-            type="text"
-            id="type"
-            name="type"
-            value={formData.type}
-            onChange={handleChange}
-            className="w-full p-3 mt-2 border rounded"
-          />
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label htmlFor="guests" className="block">
-              Guests
-            </label>
+        {/* Text Fields */}
+        {[
+          { name: "title", label: "Title", placeholder: "Enter title" },
+          {
+            name: "description",
+            label: "Description",
+            placeholder: "Enter description",
+          },
+          { name: "guests", label: "Guests", placeholder: "Number of guests" },
+          { name: "bedrooms", label: "Bedrooms", placeholder: "e.g. 3" },
+          { name: "bathrooms", label: "Bathrooms", placeholder: "e.g. 2" },
+          { name: "address", label: "Address", placeholder: "Enter address" },
+          { name: "city", label: "City", placeholder: "Enter city" },
+          { name: "contact", label: "Contact", placeholder: "Phone or email" },
+          { name: "price", label: "Price", placeholder: "Enter price" },
+        ].map(({ name, label, placeholder }) => (
+          <div key={name}>
+            <label className="font-semibold">{label}</label>
             <input
-              type="number"
-              id="guests"
-              name="guests"
-              value={formData.guests}
-              onChange={handleChange}
-              className="w-full p-3 mt-2 border rounded"
+              {...register(name, { required: `${label} is required` })}
+              placeholder={placeholder}
+              className="w-full px-3 py-2 bg-white/30 rounded-md focus:outline-none"
             />
           </div>
-          <div>
-            <label htmlFor="bedrooms" className="block">
-              Bedrooms
-            </label>
-            <input
-              type="number"
-              id="bedrooms"
-              name="bedrooms"
-              value={formData.bedrooms}
-              onChange={handleChange}
-              className="w-full p-3 mt-2 border rounded"
-            />
+        ))}
+
+        {/* Property Type */}
+        <div>
+          <label className="font-semibold">Type:</label>
+          <div className="flex gap-6 mt-2">
+            {["Villa", "House", "Apartment"].map((type) => (
+              <label key={type} className="flex items-center gap-1">
+                <input
+                  type="radio"
+                  value={type}
+                  {...register("type", { required: "Select one type" })}
+                  className="accent-[#53A2BE]"
+                />
+                {type}
+              </label>
+            ))}
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label htmlFor="bathrooms" className="block">
-              Bathrooms
-            </label>
-            <input
-              type="number"
-              id="bathrooms"
-              name="bathrooms"
-              value={formData.bathrooms}
-              onChange={handleChange}
-              className="w-full p-3 mt-2 border rounded"
-            />
-          </div>
-          <div>
-            <label htmlFor="price" className="block">
-              Price
-            </label>
-            <input
-              type="number"
-              id="price"
-              name="price"
-              value={formData.price}
-              onChange={handleChange}
-              className="w-full p-3 mt-2 border rounded"
-            />
-          </div>
-        </div>
-
-        <div>
-          <label htmlFor="amenities" className="block">
-            Amenities (comma separated)
-          </label>
-          <input
-            type="text"
-            id="amenities"
-            name="amenities"
-            value={formData.amenities}
-            onChange={handleChange}
-            className="w-full p-3 mt-2 border rounded"
-          />
-        </div>
-
-        <div>
-          <label htmlFor="address" className="block">
-            Address
-          </label>
-          <input
-            type="text"
-            id="address"
-            name="address"
-            value={formData.address}
-            onChange={handleChange}
-            className="w-full p-3 mt-2 border rounded"
-          />
-        </div>
-
-        <div>
-          <label htmlFor="city" className="block">
-            City
-          </label>
-          <input
-            type="text"
-            id="city"
-            name="city"
-            value={formData.city}
-            onChange={handleChange}
-            className="w-full p-3 mt-2 border rounded"
-          />
-        </div>
-
-        <div>
-          <label htmlFor="contact" className="block">
-            Contact
-          </label>
-          <input
-            type="text"
-            id="contact"
-            name="contact"
-            value={formData.contact}
-            onChange={handleChange}
-            className="w-full p-3 mt-2 border rounded"
-          />
-        </div>
-
-        {/* Upload Image Section */}
-        <div className="mt-6">
-          <label htmlFor="images" className="block mb-2">
-            Upload Images
-          </label>
-          <input
-            type="file"
-            id="images"
-            onChange={handleImageUpload}
-            className="w-full p-2 bg-white border rounded"
-          />
-          {formData.images.length > 0 && (
-            <div className="mt-4">
-              <h3 className="text-lg font-semibold">Uploaded Images:</h3>
-              <div className="flex gap-4 mt-2">
-                {formData.images.map((img, index) => (
-                  <div key={index} className="relative">
-                    <img
-                      src={img}
-                      alt={`Uploaded ${index}`}
-                      className="w-32 h-32 object-cover rounded"
-                    />
-                    <button
-                      onClick={() => handleImageDelete(img)}
-                      className="absolute top-0 right-0 bg-red-500 text-white p-1 rounded-full"
-                    >
-                      X
-                    </button>
-                  </div>
-                ))}
-              </div>
+        {/* Amenities Dropdown */}
+        <div className="relative">
+          <label className="font-semibold">Amenities:</label>
+          <button
+            type="button"
+            onClick={() => setShowAmenities((prev) => !prev)}
+            className="w-full mt-2 bg-white/30 px-4 py-2 rounded-md text-left"
+          >
+            {selectedAmenities.length > 0
+              ? selectedAmenities.join(", ")
+              : "Select Amenities"}
+          </button>
+          {showAmenities && (
+            <div className="absolute z-10 mt-1 bg-white/90 rounded-md shadow-md p-4 grid grid-cols-2 gap-2 max-h-60 overflow-y-scroll w-full">
+              {[
+                "Parking",
+                "Wi-Fi",
+                "AC",
+                "Heater",
+                "Bathtub",
+                "Pet Friendly",
+                "Washing machine & iron",
+                "Refrigerator & oven",
+                "Balcony",
+                "Outdoor Seating",
+                "Swimming Pool",
+                "BBQ",
+                "Fire Pit",
+                "Security Camera",
+                "Breakfast included",
+                "Gym & Spa",
+                "Board Games",
+                "House Keeping",
+              ].map((amenity) => (
+                <label key={amenity} className="text-sm">
+                  <input
+                    type="checkbox"
+                    value={amenity}
+                    checked={selectedAmenities.includes(amenity)}
+                    onChange={() => toggleAmenity(amenity)}
+                    className="mr-1"
+                  />
+                  {amenity}
+                </label>
+              ))}
             </div>
           )}
         </div>
+        <div>
+          <label className="font-semibold block mb-2">Upload Images:</label>
+          <label className="flex items-center justify-center gap-2 px-4 py-3 bg-white/30 rounded-md cursor-pointer hover:bg-white/40 transition-all">
+            <UploadCloud className="w-5 h-5" />
+            <span>
+              {watch("images") && watch("images").length > 0
+                ? `${watch("images").length} image${
+                    watch("images").length > 1 ? "s" : ""
+                  } uploaded`
+                : "Choose images"}
+            </span>
+            <input
+              type="file"
+              {...register("images")}
+              multiple
+              onChange={handleImageUpload}
+              className="hidden"
+            />
+          </label>
+        </div>
 
-        <div className="flex justify-end gap-4 mt-6">
-          <button
-            type="button"
-            onClick={() => router.push("/properties")}
-            className="bg-gray-500 text-white px-4 py-2 rounded"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            className="bg-[#0b4c61] text-white px-4 py-2 rounded"
-          >
-            Update Property
-          </button>
+        {/* Display Uploaded Images */}
+        <div className="mt-4">
+          {watch("images") && watch("images").length > 0 ? (
+            watch("images").map((img, index) => (
+              <div key={index} className="flex items-center gap-2 mt-2">
+                <img
+                  src={img}
+                  alt={`uploaded-image-${index}`}
+                  className="w-20 h-20 object-cover rounded-md"
+                />
+                <button
+                  type="button"
+                  onClick={() => handleImageDelete(img)}
+                  className="text-red-500"
+                >
+                  Delete
+                </button>
+              </div>
+            ))
+          ) : (
+            <p>No images uploaded yet.</p>
+          )}
+        </div>
+
+        {/* Submit */}
+        <div className="text-center">
+          <Button type="submit">Update Property</Button>
         </div>
       </form>
     </div>
