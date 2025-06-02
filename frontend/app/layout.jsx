@@ -17,9 +17,7 @@ export default function RootLayout({ children }) {
       <body className="flex flex-col min-h-screen">
         <Navbar />
         <Toaster position="top-center" />
-        <main className="flex-grow flex items-center justify-center ">
-          <div className="w-full max-w-7xl">{children}</div>
-        </main>
+        <main className="flex-grow">{children}</main>
         <Footer />
       </body>
     </html>

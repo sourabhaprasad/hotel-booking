@@ -13,7 +13,7 @@ const Hero = () => {
         <img
           src="/images/hero1.jpg"
           alt="Hero"
-          className="w-full h-full object-cover"
+          className="w-screen object-cover"
         />
         <div className="absolute inset-0 flex justify-center items-center px-4">
           <div className="bg-black/50 px-14 py-16 rounded-2xl text-white text-center max-w-2xl shadow-xl">
@@ -35,7 +35,7 @@ const Hero = () => {
         <img
           src="/images/hero2.jpeg"
           alt="Rooms"
-          className="w-full h-full object-cover"
+          className="w-screen h-screen object-cover"
         />
         <div className="absolute inset-0 flex justify-center items-center px-4 text-white text-center">
           <div className="bg-black/50 px-14 py-16 rounded-2xl max-w-6xl shadow-xl">
