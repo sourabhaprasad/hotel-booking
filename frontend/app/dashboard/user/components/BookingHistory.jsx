@@ -13,7 +13,7 @@ const BookingHistory = ({ bookings }) => {
         <h2 className="text-2xl font-semibold mb-4 text-[#176087]">
           Booking History
         </h2>
-        <p className="text-gray-500">No past bookings yet.</p>=
+        <p className="text-gray-500">No past bookings yet.</p>
       </div>
     );
   }
