@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import PropTypes from "prop-types";
 
 const PropCard = ({ property }) => {
   return (
@@ -43,6 +44,20 @@ const PropCard = ({ property }) => {
       </div>
     </div>
   );
+};
+
+PropCard.propTypes = {
+  property: PropTypes.shape({
+    images: PropTypes.arrayOf(PropTypes.string),
+    title: PropTypes.string.isRequired,
+    type: PropTypes.string.isRequired,
+    guests: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+      .isRequired,
+    bedrooms: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+      .isRequired,
+    city: PropTypes.string.isRequired,
+    price: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  }).isRequired,
 };
 
 export default PropCard;

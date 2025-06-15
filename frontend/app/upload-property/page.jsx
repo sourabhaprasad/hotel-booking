@@ -56,8 +56,8 @@ export default function ListPropertyForm() {
         formData.append("amenities[]", amenity);
       });
 
-      for (let i = 0; i < data.images.length; i++) {
-        formData.append("images", data.images[i]);
+      for (const image of data.images) {
+        formData.append("images", image);
       }
 
       const token = localStorage.getItem("homestayToken");
@@ -165,11 +165,14 @@ export default function ListPropertyForm() {
 
         {/* Property Type */}
         <div>
-          <label className="font-semibold">Type:</label>
+          <label htmlFor="property-type" className="font-semibold">
+            Type:
+          </label>
           <div className="flex gap-6 mt-2">
             {["Villa", "House", "Apartment"].map((type) => (
               <label key={type} className="flex items-center gap-1">
                 <input
+                  id="property-type"
                   type="radio"
                   value={type}
                   {...register("type", {
@@ -188,8 +191,11 @@ export default function ListPropertyForm() {
 
         {/* Amenities Dropdown */}
         <div className="relative" ref={amenitiesRef}>
-          <label className="font-semibold">Amenities:</label>
+          <label htmlFor="amenities-dropdown" className="font-semibold">
+            Amenities:
+          </label>
           <button
+            id="amenities-dropdown"
             type="button"
             onClick={() => setShowAmenities((prev) => !prev)}
             className="w-full mt-2 bg-white/30 px-4 py-2 rounded-md text-left"
@@ -237,17 +243,21 @@ export default function ListPropertyForm() {
 
         {/* Image Upload */}
         <div>
-          <label className="font-semibold block mb-2">Upload images:</label>
+          <label htmlFor="upload-images" className="font-semibold block mb-2">
+            Upload images:
+          </label>
           <label className="flex items-center justify-center gap-2 px-4 py-3 bg-white/30 rounded-md cursor-pointer hover:bg-white/40 transition-all">
             <UploadCloud className="w-5 h-5" />
             <span>
               {watchImages && watchImages.length > 0
-                ? `${watchImages.length} image${
-                    watchImages.length > 1 ? "s" : ""
-                  } uploaded`
+                ? (() => {
+                    const pluralSuffix = watchImages.length > 1 ? "s" : "";
+                    return `${watchImages.length} image${pluralSuffix} uploaded`;
+                  })()
                 : "Choose images"}
             </span>
             <input
+              id="upload-images"
               type="file"
               {...register("images", {
                 required: "At least one image is required",

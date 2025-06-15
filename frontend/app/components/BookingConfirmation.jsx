@@ -1,5 +1,6 @@
 "use client";
 import React, { useRef } from "react";
+import PropTypes from "prop-types";
 
 const BookingConfirmation = ({ booking }) => {
   const pdfRef = useRef(null);
@@ -82,6 +83,24 @@ const BookingConfirmation = ({ booking }) => {
       </div>
     </div>
   );
+};
+
+BookingConfirmation.propTypes = {
+  booking: PropTypes.shape({
+    title: PropTypes.string.isRequired,
+    type: PropTypes.string.isRequired,
+    address: PropTypes.string.isRequired,
+    city: PropTypes.string.isRequired,
+    state: PropTypes.string.isRequired,
+    checkIn: PropTypes.oneOfType([PropTypes.string, PropTypes.instanceOf(Date)])
+      .isRequired,
+    checkOut: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.instanceOf(Date),
+    ]).isRequired,
+    totalPrice: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
+      .isRequired,
+  }).isRequired,
 };
 
 export default BookingConfirmation;

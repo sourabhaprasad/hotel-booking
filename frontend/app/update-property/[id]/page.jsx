@@ -1,12 +1,12 @@
 "use client";
-import React from "react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { useForm } from "react-hook-form";
 import { UploadCloud } from "lucide-react";
 import Button from "@components/Button";
 import { getPropertyById, updatePropertyById } from "@lib/api";
+import PropTypes from "prop-types";
 
 const UpdateProperty = ({ params }) => {
   const { id } = React.use(params);
@@ -138,8 +138,11 @@ const UpdateProperty = ({ params }) => {
           { name: "price", label: "Price", placeholder: "Enter price" },
         ].map(({ name, label, placeholder }) => (
           <div key={name}>
-            <label className="font-semibold">{label}</label>
+            <label htmlFor={name} className="font-semibold">
+              {label}
+            </label>
             <input
+              id={name}
               {...register(name, { required: `${label} is required` })}
               placeholder={placeholder}
               className="w-full px-3 py-2 bg-white/30 rounded-md focus:outline-none"
@@ -149,11 +152,18 @@ const UpdateProperty = ({ params }) => {
 
         {/* Type */}
         <div>
-          <label className="font-semibold">Type:</label>
-          <div className="flex gap-6 mt-2">
+          <label htmlFor="property-type" className="font-semibold">
+            Type:
+          </label>
+          <div id="property-type" className="flex gap-6 mt-2">
             {["Villa", "House", "Apartment"].map((type) => (
-              <label key={type} className="flex items-center gap-1">
+              <label
+                key={type}
+                htmlFor={`type-${type}`}
+                className="flex items-center gap-1"
+              >
                 <input
+                  id={`type-${type}`}
                   type="radio"
                   value={type}
                   {...register("type", { required: "Select one type" })}
@@ -167,8 +177,11 @@ const UpdateProperty = ({ params }) => {
 
         {/* Amenities */}
         <div className="relative">
-          <label className="font-semibold">Amenities:</label>
+          <label htmlFor="amenities-dropdown" className="font-semibold">
+            Amenities:
+          </label>
           <button
+            id="amenities-dropdown"
             type="button"
             onClick={() => setShowAmenities((prev) => !prev)}
             className="w-full mt-2 bg-white/30 px-4 py-2 rounded-md text-left"
@@ -199,8 +212,13 @@ const UpdateProperty = ({ params }) => {
                 "Board Games",
                 "House Keeping",
               ].map((amenity) => (
-                <label key={amenity} className="text-sm">
+                <label
+                  key={amenity}
+                  htmlFor={`amenity-${amenity}`}
+                  className="text-sm"
+                >
                   <input
+                    id={`amenity-${amenity}`}
                     type="checkbox"
                     value={amenity}
                     checked={selectedAmenities.includes(amenity)}
@@ -216,17 +234,14 @@ const UpdateProperty = ({ params }) => {
 
         {/* Image Upload */}
         <div>
-          <label className="font-semibold block mb-2">Upload Images:</label>
-          <label className="flex items-center justify-center gap-2 px-4 py-3 bg-white/30 rounded-md cursor-pointer hover:bg-white/40 transition-all">
+          <label
+            htmlFor="images-upload"
+            className="flex items-center justify-center gap-2 px-4 py-3 bg-white/30 rounded-md cursor-pointer hover:bg-white/40 transition-all"
+          >
             <UploadCloud className="w-5 h-5" />
-            <span>
-              {watch("images")?.length > 0
-                ? `${watch("images").length} image${
-                    watch("images").length > 1 ? "s" : ""
-                  } uploaded`
-                : "Choose images"}
-            </span>
+            <span>Upload images</span>
             <input
+              id="images-upload"
               type="file"
               {...register("images")}
               multiple
@@ -234,13 +249,22 @@ const UpdateProperty = ({ params }) => {
               className="hidden"
             />
           </label>
+
+          <input
+            id="image-upload"
+            type="file"
+            {...register("images")}
+            multiple
+            onChange={handleImageUpload}
+            className="hidden"
+          />
         </div>
 
         {/* Display Images */}
         <div className="mt-4">
           {watch("images")?.length > 0 ? (
             watch("images").map((img, index) => (
-              <div key={index} className="flex items-center gap-2 mt-2">
+              <div key={img} className="flex items-center gap-2 mt-2">
                 <img
                   src={img}
                   alt={`uploaded-image-${index}`}
@@ -267,6 +291,11 @@ const UpdateProperty = ({ params }) => {
       </form>
     </div>
   );
+};
+UpdateProperty.propTypes = {
+  params: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+  }).isRequired,
 };
 
 export default UpdateProperty;

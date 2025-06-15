@@ -81,11 +81,11 @@ const PropertyList = () => {
                 )}
                 {property.images?.length > 1 && (
                   <div className="flex gap-2">
-                    {property.images.slice(1, 4).map((img, idx) => (
+                    {property.images.slice(1, 4).map((img) => (
                       <img
-                        key={idx}
+                        key={img}
                         src={img}
-                        alt={`Thumbnail ${idx + 1}`}
+                        alt="Thumbnail"
                         className="w-24 h-24 object-cover rounded"
                       />
                     ))}

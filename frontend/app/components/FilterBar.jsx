@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import PropTypes from "prop-types";
 
 const FilterBar = ({ onFilterChange }) => {
   const [city, setCity] = useState("");
@@ -82,7 +83,9 @@ const FilterBar = ({ onFilterChange }) => {
     <form onSubmit={handleFilter}>
       <div className="w-full p-4 bg-[#1D84B566] grid grid-cols-6 gap-4 rounded-md">
         <div>
-          <label className="block font-semibold mb-1">City:</label>
+          <label htmlFor="city" className="block font-semibold mb-1">
+            City:
+          </label>
           <input
             type="text"
             placeholder="Search City"
@@ -93,7 +96,9 @@ const FilterBar = ({ onFilterChange }) => {
         </div>
 
         <div>
-          <label className="block font-semibold mb-1">Check In:</label>
+          <label htmlFor="checkIn" className="block font-semibold mb-1">
+            Check In:
+          </label>
           <input
             type="date"
             value={checkIn}
@@ -103,7 +108,9 @@ const FilterBar = ({ onFilterChange }) => {
         </div>
 
         <div>
-          <label className="block font-semibold mb-1">Check Out:</label>
+          <label htmlFor="checkOut" className="block font-semibold mb-1">
+            Check Out:
+          </label>
           <input
             type="date"
             value={checkOut}
@@ -113,7 +120,9 @@ const FilterBar = ({ onFilterChange }) => {
         </div>
 
         <div>
-          <label className="block font-semibold mb-1">Guests:</label>
+          <label htmlFor="guests" className="block font-semibold mb-1">
+            Guests:
+          </label>
           <select
             value={guests}
             onChange={(e) => setGuests(e.target.value)}
@@ -128,7 +137,9 @@ const FilterBar = ({ onFilterChange }) => {
         </div>
 
         <div>
-          <label className="block font-semibold mb-1">Sort By:</label>
+          <label htmlFor="sortBy" className="block font-semibold mb-1">
+            Sort By:
+          </label>
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
@@ -143,7 +154,9 @@ const FilterBar = ({ onFilterChange }) => {
         </div>
 
         <div className="relative" ref={amenitiesRef}>
-          <label className="block font-semibold mb-1">Amenities:</label>
+          <label htmlFor="amenities" className="block font-semibold mb-1">
+            Amenities:
+          </label>
           <button
             type="button"
             onClick={() => setShowAmenities((prev) => !prev)}
@@ -190,6 +203,9 @@ const FilterBar = ({ onFilterChange }) => {
       </div>
     </form>
   );
+};
+FilterBar.propTypes = {
+  onFilterChange: PropTypes.func.isRequired,
 };
 
 export default FilterBar;

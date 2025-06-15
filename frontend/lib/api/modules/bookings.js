@@ -2,7 +2,7 @@ import client from "../client";
 import endpoints from "../endpoints/bookings";
 
 export const createBooking = async (payload, token) => {
-  return client(bookingsEndpoints.create, {
+  return client(endpoints.create, {
     method: "POST",
     body: payload,
     token,

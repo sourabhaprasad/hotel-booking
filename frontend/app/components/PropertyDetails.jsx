@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import BookingSection from "./BookingSection";
+import PropTypes from "prop-types";
 
 const PropertyDetails = ({ property, showBooking = true }) => {
   return (
@@ -17,7 +18,7 @@ const PropertyDetails = ({ property, showBooking = true }) => {
             <div className="flex justify-between gap-4">
               {property.images.slice(1, 4).map((img, index) => (
                 <img
-                  key={index}
+                  key={img}
                   src={img}
                   alt={`Thumbnail ${index}`}
                   className="w-1/3 h-[100px] object-cover rounded-md"
@@ -75,6 +76,25 @@ const PropertyDetails = ({ property, showBooking = true }) => {
       </div>
     </div>
   );
+};
+
+PropertyDetails.propTypes = {
+  property: PropTypes.shape({
+    images: PropTypes.arrayOf(PropTypes.string),
+    title: PropTypes.string.isRequired,
+    price: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    description: PropTypes.string,
+    type: PropTypes.string.isRequired,
+    guests: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+      .isRequired,
+    bedrooms: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+      .isRequired,
+    amenities: PropTypes.arrayOf(PropTypes.string),
+    address: PropTypes.string,
+    contact: PropTypes.string,
+    _id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  }).isRequired,
+  showBooking: PropTypes.bool,
 };
 
 export default PropertyDetails;

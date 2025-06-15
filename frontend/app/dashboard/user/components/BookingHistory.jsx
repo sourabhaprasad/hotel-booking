@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import PropTypes from "prop-types";
 
 const BookingHistory = ({ bookings }) => {
   const today = new Date();
@@ -63,5 +64,21 @@ const BookingHistory = ({ bookings }) => {
     </div>
   );
 };
-
+BookingHistory.propTypes = {
+  bookings: PropTypes.arrayOf(
+    PropTypes.shape({
+      _id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      checkIn: PropTypes.string.isRequired,
+      checkOut: PropTypes.string.isRequired,
+      guests: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+        .isRequired,
+      totalPrice: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+        .isRequired,
+      property: PropTypes.shape({
+        title: PropTypes.string,
+        address: PropTypes.string,
+      }),
+    })
+  ).isRequired,
+};
 export default BookingHistory;

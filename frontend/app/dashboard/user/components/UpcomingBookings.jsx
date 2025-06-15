@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import PropTypes from "prop-types";
 
 const UpcomingBookings = ({ bookings = [] }) => {
   const today = new Date();
@@ -50,6 +51,21 @@ const UpcomingBookings = ({ bookings = [] }) => {
       </div>
     </div>
   );
+};
+UpcomingBookings.propTypes = {
+  bookings: PropTypes.arrayOf(
+    PropTypes.shape({
+      _id: PropTypes.string.isRequired,
+      property: PropTypes.shape({
+        title: PropTypes.string,
+        address: PropTypes.string,
+      }),
+      checkIn: PropTypes.string.isRequired,
+      checkOut: PropTypes.string.isRequired,
+      guests: PropTypes.number.isRequired,
+      totalPrice: PropTypes.number.isRequired,
+    })
+  ),
 };
 
 export default UpcomingBookings;

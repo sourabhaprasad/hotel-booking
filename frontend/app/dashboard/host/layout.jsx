@@ -1,5 +1,5 @@
 import HostSidebar from "./components/HostSideBar";
-
+import PropTypes from "prop-types";
 export default function HostDashboardLayout({ children }) {
   return (
     <div className="min-h-screen flex justify-center ">
@@ -12,3 +12,7 @@ export default function HostDashboardLayout({ children }) {
     </div>
   );
 }
+
+HostDashboardLayout.propTypes = {
+  children: PropTypes.node.isRequired,
+};

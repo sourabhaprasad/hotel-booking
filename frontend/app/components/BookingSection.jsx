@@ -12,7 +12,8 @@ const BookingSection = ({ price, propertyId, maxGuests }) => {
   const router = useRouter();
 
   useEffect(() => {
-    const user = localStorage.getItem("user");
+    const user =
+      localStorage.getItem("homestayUser") || localStorage.getItem("user");
     if (user) {
       const parsedUser = JSON.parse(user);
       setUserRole(parsedUser.role);

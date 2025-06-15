@@ -63,8 +63,11 @@ const SignupPage = () => {
         <form className="space-y-5" onSubmit={handleSubmit}>
           {/* Name */}
           <div>
-            <label className="block font-semibold mb-1">Name:</label>
+            <label htmlFor="name" className="block font-semibold mb-1">
+              Name:
+            </label>
             <input
+              id="name"
               type="text"
               name="name"
               value={formData.name}
@@ -77,8 +80,11 @@ const SignupPage = () => {
 
           {/* Email */}
           <div>
-            <label className="block font-semibold mb-1">Email:</label>
+            <label htmlFor="email" className="block font-semibold mb-1">
+              Email:
+            </label>
             <input
+              id="email"
               type="email"
               name="email"
               value={formData.email}
@@ -91,8 +97,11 @@ const SignupPage = () => {
 
           {/* Password */}
           <div>
-            <label className="block font-semibold mb-1">Password:</label>
+            <label htmlFor="password" className="block font-semibold mb-1">
+              Password:
+            </label>
             <input
+              id="password"
               type="password"
               name="password"
               value={formData.password}
@@ -105,10 +114,14 @@ const SignupPage = () => {
 
           {/* Confirm Password */}
           <div>
-            <label className="block font-semibold mb-1">
+            <label
+              htmlFor="confirmPassword"
+              className="block font-semibold mb-1"
+            >
               Confirm Password:
             </label>
             <input
+              id="confirmPassword"
               type="password"
               name="confirmPassword"
               value={formData.confirmPassword}
@@ -121,8 +134,11 @@ const SignupPage = () => {
 
           {/* User Role */}
           <div>
-            <label className="block font-semibold mb-1">Role:</label>
+            <label htmlFor="role" className="block font-semibold mb-1">
+              Role:
+            </label>
             <select
+              id="role"
               name="role"
               value={formData.role}
               onChange={handleChange}
