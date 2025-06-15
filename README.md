@@ -1,35 +1,35 @@
 # 🏡 StayNest – Premium Homestay Booking Platform
 
-StayNest is a modern, responsive web application for discovering and booking homestays across the country. Whether you're a traveler seeking unique experiences or a host offering a cozy place, StayNest makes the process seamless, secure, and delightful.
+StayNest is a full-stack, responsive web application designed to simplify the discovery and booking of homestays. Built with a focus on scalability and user experience, it supports role-based access for guests and property managers, secure JWT-based authentication, real-time availability checks, and robust CRUD operations for listings and bookings. Whether you're implementing features for hosts or enhancing the guest booking flow, StayNest offers a modular, API-driven architecture that makes extension and maintenance straightforward.
 
 ---
 
-## 🚀 Features
+## Features
 
-- 🔍 **Smart Property Search**  
+- **Smart Property Search**  
   Filter stays by location, price, amenities, eco-friendly tags, and more.
 
-- 📅 **Real-Time Availability**  
+- **Real-Time Availability**  
   Live booking availability with instant confirmation.
 
-- 🔐 **Secure Payments & Verified Reviews**  
+- **Secure Payments & Verified Reviews**  
   Trustworthy bookings with secure payment gateways and real guest reviews.
 
-- 🧑‍💼 **Role-Based Access**  
+- **Role-Based Access**  
   Separate experiences for Guests and Hosts.
 
-- 📧 **Booking Notifications**  
+- **Booking Notifications**  
   Email confirmations for guests and alerts for property managers.
 
-- 🏷️ **Dynamic Pricing & Discounts**  
+- **Dynamic Pricing & Discounts**  
   Automatic discounts for long stays (weekly/monthly).
 
-- 📊 **Host Dashboard**  
+- **Host Dashboard**  
   Manage your listings, view bookings, and track property performance.
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Frontend
 
@@ -48,7 +48,7 @@ StayNest is a modern, responsive web application for discovering and booking hom
 
 ---
 
-## 📁 Folder Structure
+## Folder Structure
 
 ```
 /
@@ -68,12 +68,12 @@ StayNest is a modern, responsive web application for discovering and booking hom
 
 ---
 
-## 🧑‍💻 Local Development
+## Local Development
 
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/staynest.git
+git clone https://github.com/sourabhaprasad/staynest.git
 cd staynest
 ```
 
@@ -134,7 +134,7 @@ Visit: [http://localhost:3000](http://localhost:3000)
 
 ---
 
-## 🧪 Sample User Credentials
+## Sample User Credentials
 
 **Guest**
 
@@ -152,10 +152,88 @@ Password: 123456
 
 ---
 
-## ✨ Future Enhancements
+## API Endpoints 
+
+* `POST /api/auth/signup` – Register user
+* `POST /api/auth/signin` – Login and get token
+* `POST /api/properties` – Create property *(Manager only)*
+* `GET /api/properties` – List all properties
+* `GET /api/properties/:id` – Get property by ID
+* `GET /api/bookings/host` – Host’s received bookings
+* `POST /api/bookings` – Book property *(Guest only)*
+* `GET /api/bookings/guest` – Guest's bookings
+
+---
+
+## Common Extension Patterns
+
+Planning to add more features or scale the project? Follow these proven patterns:
+
+### 1. **Modular API Layers**
+
+Organize API logic into:
+
+* `routes/` – defines endpoints
+* `controllers/` – handles logic
+* `services/` – reusable business logic
+* `utils/` – helpers (e.g. price calculation, email)
+
+> Example: Want to add **wishlist functionality**?
+
+* Create: `routes/wishlist.js`, `controllers/wishlistController.js`, `models/Wishlist.js`
+
+---
+
+### 2. **Role-Based Access Control**
+
+Use middleware to restrict routes:
+
+```js
+// checkRole.js
+export const checkRole = (allowedRoles) => (req, res, next) => {
+  if (!allowedRoles.includes(req.user.role)) {
+    return res.status(403).json({ error: "Forbidden" });
+  }
+  next();
+};
+```
+
+---
+
+### 3. **Client API Layer (Frontend)**
+
+Centralize all API calls:
+
+```
+lib/api/
+├── endpoints/   # e.g., bookings.js, auth.js
+├── modules/     # exports grouped functionality
+├── client.js    # fetch wrapper
+└── index.js     # re-exports all modules
+```
+
+> To add new endpoints:
+
+* Define in `endpoints/wishlist.js`
+* Use in components via `import { createWishlist } from "@lib/api"`
+
+---
+
+### 4. **Component Reusability**
+
+Create shared components like:
+
+* `<Button />`, `<Card />`, `<PropertyCard />`
+* `<BookingSection />`, `<DateRangePicker />`
+
+> DRY (Don’t Repeat Yourself) design helps in scaling and maintaining UI logic.
+
+---
+
+## Future Enhancements
 
 - Admin dashboard
 - Payment gateway integration (e.g., Stripe)
 - Multi-language support
 - Host earnings analytics
-- Progressive Web App (PWA) support
+- Wishlists and Reviews
