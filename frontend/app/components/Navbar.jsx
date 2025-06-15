@@ -24,7 +24,7 @@ export default function Navbar() {
   return (
     <nav className="bg-[#0A2239] text-white px-6 py-4 flex justify-between items-center shadow-md">
       <Link href="/">
-        <h1 className="text-xl font-semibold">Homestay Finder</h1>
+        <h1 className="text-xl font-semibold">StayNest 🏡</h1>
       </Link>
       <div className="space-x-4 flex items-center">
         <Link

@@ -5,8 +5,8 @@ import { Toaster } from "react-hot-toast";
 import "./globals.css";
 
 export const metadata = {
-  title: "Homestay Finder",
-  description: "Comfort",
+  title: "StayNest",
+  description: "Find Your Perfect Homestay",
   icons: {
     icon: "logo/homestay1.png",
   },
