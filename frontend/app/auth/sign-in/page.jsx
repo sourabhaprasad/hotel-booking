@@ -4,9 +4,12 @@ import toast, { Toaster } from "react-hot-toast";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signInUser } from "@lib/api";
+import { useUser } from "../../../context/UserContext";
 
 const SignInPage = () => {
   const router = useRouter();
+  const { login } = useUser();
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -22,9 +25,12 @@ const SignInPage = () => {
     try {
       const { user, token } = await signInUser(formData);
 
-      localStorage.setItem("homestayUser", JSON.stringify(user));
+      // ✅ Save to localStorage (optional)
       localStorage.setItem("homestayToken", token);
       localStorage.setItem("token", token);
+
+      // ✅ Tell context to update the user
+      login(user);
 
       toast.success("Logged in successfully!", { position: "top-center" });
       setTimeout(() => {

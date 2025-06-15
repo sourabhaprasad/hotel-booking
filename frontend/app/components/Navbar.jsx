@@ -1,23 +1,14 @@
 "use client";
-import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useUser } from "../../context/UserContext";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function Navbar() {
   const router = useRouter();
-  const [user, setUser] = useState(null);
-
-  // Load user from localStorage
-  useEffect(() => {
-    const storedUser = localStorage.getItem("homestayUser");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-  }, []);
+  const { user, logout } = useUser();
 
   const handleLogout = () => {
-    localStorage.removeItem("homestayUser");
-    setUser(null);
+    logout();
     router.push("/");
   };
 
@@ -66,21 +57,14 @@ export default function Navbar() {
           </>
         ) : (
           <>
-            {user?.role === "manager" ? (
-              <Link
-                href="/dashboard/host"
-                className="font-semibold text-sm px-3 py-2"
-              >
-                {user.name.toUpperCase()}
-              </Link>
-            ) : (
-              <Link
-                href="/dashboard/user"
-                className="font-semibold text-sm px-3 py-2"
-              >
-                {user.name.toUpperCase()}
-              </Link>
-            )}
+            <Link
+              href={
+                user.role === "manager" ? "/dashboard/host" : "/dashboard/user"
+              }
+              className="font-semibold text-sm px-3 py-2"
+            >
+              {user.name?.toUpperCase()}
+            </Link>
             <button
               onClick={handleLogout}
               className="px-3 py-2 rounded-md text-white hover:bg-red-600 transition"
