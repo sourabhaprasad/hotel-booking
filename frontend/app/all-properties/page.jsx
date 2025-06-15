@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import FilterBar from "../components/FilterBar";
 import PropCard from "../components/PropCard";
+import { fetchAllProperties } from "../../lib/api";
 
 const AllPropertiesPage = () => {
   const [properties, setProperties] = useState([]);
@@ -11,42 +12,23 @@ const AllPropertiesPage = () => {
   const [error, setError] = useState("");
   const [filters, setFilters] = useState({});
 
-  const fetchProperties = async (activeFilters = {}) => {
-    try {
-      setLoading(true);
-
-      const queryParams = new URLSearchParams();
-
-      if (activeFilters.city) queryParams.append("city", activeFilters.city);
-      if (activeFilters.guests)
-        queryParams.append("guests", activeFilters.guests);
-      if (activeFilters.sortBy)
-        queryParams.append("sortBy", activeFilters.sortBy);
-      if (activeFilters.selectedAmenities?.length > 0) {
-        queryParams.append(
-          "amenities",
-          activeFilters.selectedAmenities.join(",")
-        );
-      }
-
-      const res = await fetch(
-        `http://localhost:5000/api/properties?${queryParams}`
-      );
-      const data = await res.json();
-
-      if (!res.ok) throw new Error(data.message || "Failed to fetch");
-      setProperties(data);
-    } catch (err) {
-      console.error("Fetch error:", err.message);
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchProperties(filters);
+    const getProperties = async () => {
+      try {
+        setLoading(true);
+        const data = await fetchAllProperties(filters);
+        setProperties(data);
+      } catch (err) {
+        console.error("Fetch error:", err.message);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getProperties();
   }, [filters]);
+
   return (
     <>
       <div className="p-6">

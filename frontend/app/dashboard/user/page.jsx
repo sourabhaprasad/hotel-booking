@@ -2,35 +2,21 @@
 import { useEffect, useState } from "react";
 import UpcomingBookings from "./components/UpcomingBookings";
 import BookingHistory from "./components/BookingHistory";
+import { getGuestBookings } from "@lib/api";
 
 const GuestDashboard = () => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [view, setView] = useState("upcoming"); // State to track the current view
+  const [view, setView] = useState("upcoming");
 
   useEffect(() => {
     const fetchBookings = async () => {
       try {
         const token = localStorage.getItem("token");
-        if (!token) {
-          throw new Error("No token found");
-        }
+        if (!token) throw new Error("No token found");
 
-        const res = await fetch(
-          "http://localhost:5000/api/bookings/my-bookings",
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        if (!res.ok) throw new Error("Failed to fetch bookings");
-
-        const data = await res.json();
+        const data = await getGuestBookings(token);
         setBookings(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error("Error loading bookings:", error);
@@ -41,11 +27,10 @@ const GuestDashboard = () => {
     };
 
     fetchBookings();
-  }, []); // Empty dependency array ensures it runs only once after component mounts
+  }, []);
 
-  const toggleView = () => {
-    setView((prevView) => (prevView === "upcoming" ? "history" : "upcoming"));
-  };
+  const toggleView = () =>
+    setView((prev) => (prev === "upcoming" ? "history" : "upcoming"));
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -56,7 +41,7 @@ const GuestDashboard = () => {
       <div className="mb-6">
         <button
           onClick={toggleView}
-          className="px-4 py-2 bg-teal-700  text-white rounded"
+          className="px-4 py-2 bg-teal-700 text-white rounded"
         >
           {view === "upcoming"
             ? "Show Booking History"

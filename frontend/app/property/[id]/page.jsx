@@ -1,7 +1,9 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import PropertyDetails from "@/app/components/PropertyDetails";
+import PropertyDetails from "@components/PropertyDetails";
+import { fetchPropertyById } from "@lib/api";
 
 const PropertyPage = () => {
   const { id } = useParams();
@@ -11,10 +13,9 @@ const PropertyPage = () => {
   useEffect(() => {
     if (!id) return;
 
-    const fetchProperty = async () => {
+    const getProperty = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/properties/${id}`);
-        const data = await res.json();
+        const data = await fetchPropertyById(id);
         setProperty(data);
       } catch (error) {
         console.error("Error fetching property:", error);
@@ -23,7 +24,7 @@ const PropertyPage = () => {
       }
     };
 
-    fetchProperty();
+    getProperty();
   }, [id]);
 
   if (loading) return <div className="p-6">Loading...</div>;

@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"]
+      "@lib/api": ["lib/api/index.js"],
+      "@components/*": ["app/components/*"],
+      "@utils/*": ["app/utils/*"],
+      "@/*": ["app/*"]
     }
   }
 }

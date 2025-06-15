@@ -5,12 +5,12 @@ import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { useForm } from "react-hook-form";
 import { UploadCloud } from "lucide-react";
-import Button from "@/app/components/Button";
+import Button from "@components/Button";
+import { getPropertyById, updatePropertyById } from "@lib/api";
 
 const UpdateProperty = ({ params }) => {
   const { id } = React.use(params);
   const router = useRouter();
-  const [property, setProperty] = useState(null);
   const [loading, setLoading] = useState(true);
   const { register, handleSubmit, setValue, watch, reset } = useForm();
   const [selectedAmenities, setSelectedAmenities] = useState([]);
@@ -20,18 +20,8 @@ const UpdateProperty = ({ params }) => {
     const fetchProperty = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch(`http://localhost:5000/api/properties/${id}`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
+        const data = await getPropertyById(id, token);
 
-        if (!res.ok) throw new Error("Failed to fetch property");
-
-        const data = await res.json();
-        setProperty(data);
         reset({
           title: data.title,
           description: data.description,
@@ -44,8 +34,9 @@ const UpdateProperty = ({ params }) => {
           address: data.address,
           city: data.city,
           contact: data.contact || "",
-          images: data.images || [], // Ensure images is an empty array if no images
+          images: data.images || [],
         });
+        setSelectedAmenities(data.amenities || []);
       } catch (err) {
         console.error("Error fetching property:", err);
         toast.error("Failed to fetch property data");
@@ -72,27 +63,18 @@ const UpdateProperty = ({ params }) => {
         }
       );
 
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData?.error?.message || "Failed to upload image");
-      }
-
       const data = await res.json();
+      if (!res.ok || !data?.secure_url)
+        throw new Error(data?.error?.message || "Failed to upload image");
 
-      // Check if response contains a valid URL
-      if (data?.secure_url) {
-        const currentImages = watch("images") || [];
-        // Remove any null or empty values and add the new image URL
-        const updatedImages = currentImages
-          .filter((img) => img !== null && img !== "")
-          .concat(data.secure_url);
-        setValue("images", updatedImages); // Ensure only valid URLs are added
-        toast.success("Image uploaded successfully");
-      } else {
-        toast.error("Failed to upload image, please try again.");
-      }
+      const currentImages = watch("images") || [];
+      const updatedImages = currentImages
+        .filter((img) => img)
+        .concat(data.secure_url);
+      setValue("images", updatedImages);
+      toast.success("Image uploaded successfully");
     } catch (err) {
-      console.error("Error uploading image:", err);
+      console.error("Image upload error:", err);
       toast.error(err.message || "Failed to upload image");
     }
   };
@@ -115,28 +97,16 @@ const UpdateProperty = ({ params }) => {
     const updatedData = {
       ...data,
       amenities: selectedAmenities,
-      images: (watch("images") || []).filter(
-        (img) => img !== null && img !== ""
-      ), // Ensure no null images
+      images: (watch("images") || []).filter((img) => img),
     };
 
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`http://localhost:5000/api/properties/${id}`, {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedData),
-      });
-
-      if (!res.ok) throw new Error("Failed to update property");
-
+      await updatePropertyById(id, updatedData, token);
       toast.success("Property updated successfully");
       router.push("/dashboard/host");
     } catch (err) {
-      console.error("Error updating property:", err);
+      console.error("Update error:", err);
       toast.error("Failed to update property");
     }
   };
@@ -177,7 +147,7 @@ const UpdateProperty = ({ params }) => {
           </div>
         ))}
 
-        {/* Property Type */}
+        {/* Type */}
         <div>
           <label className="font-semibold">Type:</label>
           <div className="flex gap-6 mt-2">
@@ -195,7 +165,7 @@ const UpdateProperty = ({ params }) => {
           </div>
         </div>
 
-        {/* Amenities Dropdown */}
+        {/* Amenities */}
         <div className="relative">
           <label className="font-semibold">Amenities:</label>
           <button
@@ -243,12 +213,14 @@ const UpdateProperty = ({ params }) => {
             </div>
           )}
         </div>
+
+        {/* Image Upload */}
         <div>
           <label className="font-semibold block mb-2">Upload Images:</label>
           <label className="flex items-center justify-center gap-2 px-4 py-3 bg-white/30 rounded-md cursor-pointer hover:bg-white/40 transition-all">
             <UploadCloud className="w-5 h-5" />
             <span>
-              {watch("images") && watch("images").length > 0
+              {watch("images")?.length > 0
                 ? `${watch("images").length} image${
                     watch("images").length > 1 ? "s" : ""
                   } uploaded`
@@ -264,9 +236,9 @@ const UpdateProperty = ({ params }) => {
           </label>
         </div>
 
-        {/* Display Uploaded Images */}
+        {/* Display Images */}
         <div className="mt-4">
-          {watch("images") && watch("images").length > 0 ? (
+          {watch("images")?.length > 0 ? (
             watch("images").map((img, index) => (
               <div key={index} className="flex items-center gap-2 mt-2">
                 <img

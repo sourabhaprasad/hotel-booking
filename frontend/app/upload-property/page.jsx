@@ -4,6 +4,7 @@ import toast, { Toaster } from "react-hot-toast";
 import { useState, useRef, useEffect } from "react";
 import { UploadCloud } from "lucide-react";
 import Button from "../components/Button";
+import { createProperty } from "@lib/api";
 
 export default function ListPropertyForm() {
   const {
@@ -45,45 +46,23 @@ export default function ListPropertyForm() {
 
       const formData = new FormData();
 
-      // Append text fields
       Object.entries(data).forEach(([key, value]) => {
         if (key !== "images") {
           formData.append(key, value);
         }
       });
 
-      // Append amenities
       selectedAmenities.forEach((amenity) => {
         formData.append("amenities[]", amenity);
       });
 
-      // Append images
       for (let i = 0; i < data.images.length; i++) {
         formData.append("images", data.images[i]);
       }
 
       const token = localStorage.getItem("homestayToken");
 
-      const submissionPromise = fetch("http://localhost:5000/api/properties", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      }).then(async (res) => {
-        const contentType = res.headers.get("content-type");
-        const text = await res.text();
-
-        if (!res.ok) {
-          throw new Error(`Server error: ${text}`);
-        }
-
-        if (contentType && contentType.includes("application/json")) {
-          return JSON.parse(text);
-        } else {
-          throw new Error("Expected JSON but got non-JSON response");
-        }
-      });
+      const submissionPromise = createProperty(formData, token);
 
       await toast.promise(submissionPromise, {
         loading: "Submitting...",

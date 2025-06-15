@@ -1,29 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { fetchHostBookings } from "@lib/api";
 
 const BookingsReceived = () => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchHostBookings = async () => {
+    const loadBookings = async () => {
       try {
         const token = localStorage.getItem("token");
-
-        const res = await fetch("http://localhost:5000/api/bookings/host", {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (!res.ok) {
-          throw new Error("Failed to fetch bookings");
-        }
-
-        const data = await res.json();
+        const data = await fetchHostBookings(token);
         setBookings(data);
       } catch (error) {
         console.error("Error fetching bookings:", error);
@@ -32,7 +20,7 @@ const BookingsReceived = () => {
       }
     };
 
-    fetchHostBookings();
+    loadBookings();
   }, []);
 
   if (loading) return <div className="p-6">Loading bookings...</div>;

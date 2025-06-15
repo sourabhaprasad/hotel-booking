@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import toast, { Toaster } from "react-hot-toast";
+import { fetchMyProperties, deletePropertyById } from "@lib/api";
 
 const PropertyList = () => {
   const [properties, setProperties] = useState([]);
@@ -10,36 +11,20 @@ const PropertyList = () => {
   const router = useRouter();
 
   useEffect(() => {
-    const fetchHostProperties = async () => {
+    const loadProperties = async () => {
       try {
         const token = localStorage.getItem("token");
-
-        const res = await fetch(
-          "http://localhost:5000/api/properties/my-properties",
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        if (!res.ok) {
-          throw new Error("Failed to fetch host properties");
-        }
-
-        const data = await res.json();
+        const data = await fetchMyProperties(token);
         setProperties(data);
       } catch (error) {
-        console.error("Error fetching host properties:", error);
+        console.error("Error fetching properties:", error);
         toast.error("Failed to fetch properties");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchHostProperties();
+    loadProperties();
   }, []);
 
   const handleDelete = async (id) => {
@@ -48,15 +33,7 @@ const PropertyList = () => {
 
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`http://localhost:5000/api/properties/${id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!res.ok) throw new Error("Failed to delete");
-
+      await deletePropertyById(id, token);
       setProperties((prev) => prev.filter((p) => p._id !== id));
       toast.success("Property deleted successfully");
     } catch (err) {
