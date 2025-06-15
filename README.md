@@ -47,13 +47,6 @@ StayNest is a full-stack, responsive web application designed to simplify the di
 - **Nodemailer** for email notifications
 
 ---
-## Deployment
-This application is deployed with:
-
-- Frontend: Vercel ([https://staynest-sourabha.vercel.app/](https://staynest-sourabha.vercel.app/))
-- Backend: Render
-
----
 ## Folder Structure
 
 ```
