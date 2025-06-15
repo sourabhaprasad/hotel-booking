@@ -54,6 +54,12 @@ export const signIn = async (req, res) => {
       },
     });
   } catch (err) {
-    res.status(500).json({ error: "Login failed" });
+    console.error("Login error:", err); // Log the error for debugging
+    res
+      .status(500)
+      .json({
+        error:
+          "An unexpected error occurred during login. Please try again later.",
+      });
   }
 };

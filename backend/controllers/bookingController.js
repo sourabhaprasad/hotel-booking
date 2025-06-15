@@ -173,8 +173,7 @@ export const getConfirmedBooking = async (req, res) => {
       return res.status(404).json({ error: "No confirmed booking found." });
     }
 
-    const { title, type, address, city, state, pinCode, price } =
-      booking.property;
+    const { title, type, address, city, state, pinCode } = booking.property;
 
     res.status(200).json({
       booking: {

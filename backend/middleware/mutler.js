@@ -1,8 +1,12 @@
 import multer from "multer";
 import path from "path";
 
-// Store files temporarily before sending to Cloudinary
-const storage = multer.diskStorage({});
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const uploadPath = path.join(__dirname, "../uploads");
+    cb(null, uploadPath);
+  },
+});
 
 const fileFilter = (req, file, cb) => {
   const ext = path.extname(file.originalname);
