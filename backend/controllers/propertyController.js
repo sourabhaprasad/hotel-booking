@@ -2,13 +2,20 @@ import Property from "../models/Property.js";
 
 export const createProperty = async (req, res) => {
   try {
+    console.log("Incoming body:", req.body);
+    console.log("Incoming files:", req.files); // <== debug this
+
     if (req.user.role !== "manager") {
       return res
         .status(403)
         .json({ error: "Only property managers can upload" });
     }
 
-    const imageUrls = req.files.map((file) => file.path);
+    if (!req.files || !Array.isArray(req.files) || req.files.length === 0) {
+      return res.status(400).json({ error: "At least one image is required" });
+    }
+
+    const imageUrls = req.files.map((file) => file.path); // Cloudinary provides `path` field
 
     const propertyData = {
       ...req.body,
@@ -28,17 +35,19 @@ export const createProperty = async (req, res) => {
       user: req.user.id,
     });
 
-    const savedProperty = await newProperty.save(); // <- You forgot to save it!
+    const savedProperty = await newProperty.save();
 
     res.status(201).json({
       message: "Property listed successfully",
       property: savedProperty,
     });
   } catch (err) {
-    console.error("Error creating property:", err);
-    res
-      .status(500)
-      .json({ error: "Something went wrong while listing property" });
+    console.error("❌ Error creating property:", err);
+
+    // Always send JSON errors
+    res.status(500).json({
+      error: err?.message || "Something went wrong while listing property",
+    });
   }
 };
 

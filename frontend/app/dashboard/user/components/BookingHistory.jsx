@@ -12,7 +12,7 @@ const BookingHistory = ({ bookings }) => {
         <h2 className="text-2xl font-semibold mb-4 text-[#176087]">
           Booking History
         </h2>
-        <p className="text-gray-500">No past bookings yet.</p>
+        <p className="text-gray-500">No past bookings yet.</p>=
       </div>
     );
   }
@@ -28,10 +28,21 @@ const BookingHistory = ({ bookings }) => {
             key={booking._id}
             className=" p-6 rounded-xl shadow-lg hover:shadow-xl transition duration-300 ease-in-out bg-gray-50 hover:bg-[#53A2BE]/30"
           >
-            <h3 className="text-lg font-medium text-[#333]">
-              {booking.property.title}
-            </h3>
-            <p className="text-sm text-gray-600">{booking.property.address}</p>
+            {booking.property ? (
+              <>
+                <h3 className="text-lg font-medium text-[#333]">
+                  {booking.property.title}
+                </h3>
+                <p className="text-sm text-gray-600">
+                  {booking.property.address}
+                </p>
+              </>
+            ) : (
+              <p className="text-sm text-red-500">
+                Property deleted or unavailable.
+              </p>
+            )}
+
             <p className="mt-2 text-sm">
               <strong>Check-in:</strong>{" "}
               {new Date(booking.checkIn).toDateString()}

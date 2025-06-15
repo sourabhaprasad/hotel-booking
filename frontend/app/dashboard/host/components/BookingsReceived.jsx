@@ -52,7 +52,7 @@ const BookingsReceived = () => {
             <h3 className="text-lg font-bold">{booking.property.title}</h3>
             <p>
               <span className="font-semibold">Guest:</span>{" "}
-              {booking.user.name || booking.user.email}
+              {booking.user?.name || booking.user?.email || "Unknown User"}
             </p>
             <p>
               <span className="font-semibold">Check-in:</span>{" "}

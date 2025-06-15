@@ -27,6 +27,22 @@ export default function ListPropertyForm() {
 
   const onSubmit = async (data) => {
     try {
+      const maxSizeMB = 2;
+      const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+
+      if (data.images && data.images.length > 0) {
+        for (let file of data.images) {
+          if (!allowedTypes.includes(file.type)) {
+            toast.error(`Unsupported file type: ${file.type}`);
+            return;
+          }
+          if (file.size > maxSizeMB * 1024 * 1024) {
+            toast.error(`${file.name} is too large (max ${maxSizeMB}MB)`);
+            return;
+          }
+        }
+      }
+
       const formData = new FormData();
 
       // Append text fields
@@ -42,38 +58,44 @@ export default function ListPropertyForm() {
       });
 
       // Append images
-      if (data.images && data.images.length > 0) {
-        for (let i = 0; i < data.images.length; i++) {
-          formData.append("images", data.images[i]);
-        }
+      for (let i = 0; i < data.images.length; i++) {
+        formData.append("images", data.images[i]);
       }
 
       const token = localStorage.getItem("homestayToken");
 
-      await toast.promise(
-        fetch("http://localhost:5000/api/properties", {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          body: formData,
-        }).then(async (res) => {
-          const result = await res.json();
-          if (!res.ok) throw new Error(result.message || "Submission failed");
-          return result;
-        }),
-        {
-          loading: "Submitting...",
-          success: "Property submitted successfully!",
-          error: "Failed to submit property.",
-        }
-      );
+      const submissionPromise = fetch("http://localhost:5000/api/properties", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      }).then(async (res) => {
+        const contentType = res.headers.get("content-type");
+        const text = await res.text();
 
-      // Reset form and amenities
+        if (!res.ok) {
+          throw new Error(`Server error: ${text}`);
+        }
+
+        if (contentType && contentType.includes("application/json")) {
+          return JSON.parse(text);
+        } else {
+          throw new Error("Expected JSON but got non-JSON response");
+        }
+      });
+
+      await toast.promise(submissionPromise, {
+        loading: "Submitting...",
+        success: "Property submitted successfully!",
+        error: (err) => err.message || "Failed to submit property.",
+      });
+
       reset();
       setSelectedAmenities([]);
     } catch (err) {
       console.error("Submission error:", err);
+      toast.error("Something went wrong. Please try again.");
     }
   };
 
@@ -248,7 +270,10 @@ export default function ListPropertyForm() {
             </span>
             <input
               type="file"
-              {...register("images")}
+              {...register("images", {
+                required: "At least one image is required",
+              })}
+              accept="image/*"
               multiple
               className="hidden"
             />

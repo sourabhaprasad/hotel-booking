@@ -1,5 +1,5 @@
 "use client";
-
+import React from "react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
@@ -8,7 +8,7 @@ import { UploadCloud } from "lucide-react";
 import Button from "@/app/components/Button";
 
 const UpdateProperty = ({ params }) => {
-  const { id } = params; // Extract the property ID from the URL params
+  const { id } = React.use(params);
   const router = useRouter();
   const [property, setProperty] = useState(null);
   const [loading, setLoading] = useState(true);
