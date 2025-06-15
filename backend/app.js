@@ -19,7 +19,7 @@ app.use(
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.send("Hotel Booking Management Backend");
+  res.send("StayNest API is running");
 });
 
 app.use("/api/properties", propertyRoutes);
