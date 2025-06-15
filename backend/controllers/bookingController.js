@@ -140,13 +140,10 @@ export const createBooking = async (req, res) => {
 };
 
 export const getUserBookings = async (req, res) => {
-  console.log("User in request:", req.user); // Log user info
-
   try {
     const bookings = await Booking.find({ user: req.user.id })
       .populate("property")
       .sort({ checkIn: 1 });
-    console.log("Bookings found:", bookings); // Log found bookings
 
     if (!bookings || bookings.length === 0) {
       return res
@@ -200,15 +197,12 @@ export const getConfirmedBooking = async (req, res) => {
 };
 
 export const getHostBookings = async (req, res) => {
-  console.log("Logged-in Manager ID:", req.user.id);
-
   try {
     if (req.user.role !== "manager") {
       return res.status(403).json({ error: "Access denied. Managers only." });
     }
 
     const properties = await Property.find({ user: req.user.id }).select("_id");
-    console.log("Properties owned by manager:", properties);
 
     const propertyIds = properties.map((property) => property._id);
 

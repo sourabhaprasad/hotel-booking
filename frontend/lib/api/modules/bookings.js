@@ -1,6 +1,14 @@
 import client from "../client";
 import endpoints from "../endpoints/bookings";
 
+export const createBooking = async (payload, token) => {
+  return client(bookingsEndpoints.create, {
+    method: "POST",
+    body: payload,
+    token,
+  });
+};
+
 export const fetchConfirmedBooking = async (id, token) => {
   if (!id) throw new Error("Booking ID is required");
 

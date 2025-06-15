@@ -10,11 +10,12 @@ export const protect = async (req, res, next) => {
   ) {
     try {
       token = req.headers.authorization.split(" ")[1];
-      console.log("Incoming token:", token);
+
+      if (!token || token === "null") {
+        return res.status(401).json({ error: "Invalid token" });
+      }
 
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      console.log("Decoded token:", decoded);
-
       const user = await User.findById(decoded.id).select("-password");
 
       if (!user) {

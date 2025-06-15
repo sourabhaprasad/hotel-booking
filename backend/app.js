@@ -22,7 +22,6 @@ app.get("/", (req, res) => {
   res.send("Hotel Booking Management Backend");
 });
 
-// Routes
 app.use("/api/properties", propertyRoutes);
 app.use("/api/users", authRoutes);
 app.use("/api/bookings", bookingRoutes);

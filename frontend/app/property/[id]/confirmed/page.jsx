@@ -7,15 +7,12 @@ import { fetchConfirmedBooking } from "@lib/api";
 
 const BookingConfirmedPage = () => {
   const params = useParams();
-  console.log("Route params:", params);
   const { id } = params;
   const [booking, setBooking] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!id) return;
-    const token = localStorage.getItem("token");
-    console.log("Token:", token);
 
     const getBooking = async () => {
       try {

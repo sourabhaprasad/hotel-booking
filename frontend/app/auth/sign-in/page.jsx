@@ -1,9 +1,9 @@
 "use client";
 import React, { useState } from "react";
-import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { signInUser } from "@lib/api";
 
 const SignInPage = () => {
   const router = useRouter();
@@ -20,18 +20,12 @@ const SignInPage = () => {
     e.preventDefault();
 
     try {
-      const res = await axios.post("http://localhost:5000/api/users/sign-in", {
-        email: formData.email,
-        password: formData.password,
-      });
-
-      const { user, token } = res.data;
+      const { user, token } = await signInUser(formData);
 
       localStorage.setItem("homestayUser", JSON.stringify(user));
       localStorage.setItem("homestayToken", token);
       localStorage.setItem("token", token);
 
-      console.log("Token being sent:", token);
       toast.success("Logged in successfully!", { position: "top-center" });
       setTimeout(() => {
         toast("Redirecting...", {
@@ -61,7 +55,6 @@ const SignInPage = () => {
         <h2 className="text-2xl font-semibold text-center mb-6">Sign In</h2>
 
         <form className="space-y-5" onSubmit={handleSubmit}>
-          {/* Email */}
           <div>
             <label className="block font-semibold mb-1">Email:</label>
             <input
@@ -75,7 +68,6 @@ const SignInPage = () => {
             />
           </div>
 
-          {/* Password */}
           <div>
             <label className="block font-semibold mb-1">Password:</label>
             <input
@@ -89,7 +81,6 @@ const SignInPage = () => {
             />
           </div>
 
-          {/* Submit */}
           <div className="text-center">
             <button
               type="submit"
@@ -100,7 +91,6 @@ const SignInPage = () => {
           </div>
         </form>
 
-        {/* Not Registered */}
         <p className="text-center mt-4 text-sm font-medium">
           Not registered?{" "}
           <Link

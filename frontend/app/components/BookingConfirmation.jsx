@@ -49,9 +49,7 @@ const BookingConfirmation = ({ booking }) => {
           <p>
             <strong>State:</strong> {booking.state}
           </p>
-          <p>
-            <strong>Pin Code:</strong> {booking.pinCode}
-          </p>
+
           <p>
             <strong>Check In:</strong>{" "}
             {new Date(booking.checkIn).toLocaleDateString("en-IN", {

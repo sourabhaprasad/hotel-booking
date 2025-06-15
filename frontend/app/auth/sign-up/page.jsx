@@ -1,12 +1,12 @@
 "use client";
 import React, { useState } from "react";
-import axios from "axios";
 import Link from "next/link";
 import toast, { Toaster } from "react-hot-toast";
-import { useRouter } from "next/navigation"; // 👈 Add this
+import { useRouter } from "next/navigation";
+import { signUpUser } from "@lib/api";
 
 const SignupPage = () => {
-  const router = useRouter(); // 👈 Initialize router
+  const router = useRouter();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -27,16 +27,14 @@ const SignupPage = () => {
     }
 
     try {
-      const res = await axios.post("http://localhost:5000/api/users/sign-up", {
+      await signUpUser({
         name: formData.name,
         email: formData.email,
         password: formData.password,
         role: formData.role,
       });
 
-      toast.success("Registered successfully!", {
-        position: "top-center",
-      });
+      toast.success("Registered successfully!", { position: "top-center" });
 
       setFormData({
         name: "",
@@ -46,12 +44,11 @@ const SignupPage = () => {
         role: "",
       });
 
-      // ⏳ Redirect after short delay
       setTimeout(() => {
         router.push("/auth/sign-in");
-      }, 1500); // 1.5s delay so user sees the toast
+      }, 1500);
     } catch (err) {
-      toast.error(err.response?.data?.error || "Registration failed", {
+      toast.error(err.message || "Registration failed", {
         position: "top-center",
       });
     }
@@ -72,7 +69,7 @@ const SignupPage = () => {
               name="name"
               value={formData.name}
               onChange={handleChange}
-              className="w-full px-4 py-2 border rounded bg-[#f8f9fa]/60 border border-transparent focus:outline-none focus:ring-2 focus:ring-[#1b4b66]"
+              className="w-full px-4 py-2 rounded bg-[#f8f9fa]/60 focus:ring-2 focus:ring-[#1b4b66]"
               placeholder="Enter your name"
               required
             />
@@ -86,7 +83,7 @@ const SignupPage = () => {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className="w-full px-4 py-2 border rounded bg-[#f8f9fa]/60 border border-transparent focus:outline-none focus:ring-2 focus:ring-[#1b4b66]"
+              className="w-full px-4 py-2 rounded bg-[#f8f9fa]/60 focus:ring-2 focus:ring-[#1b4b66]"
               placeholder="Enter your email"
               required
             />
@@ -100,7 +97,7 @@ const SignupPage = () => {
               name="password"
               value={formData.password}
               onChange={handleChange}
-              className="w-full px-4 py-2 border rounded bg-[#f8f9fa]/60 border border-transparent focus:outline-none focus:ring-2 focus:ring-[#1b4b66]"
+              className="w-full px-4 py-2 rounded bg-[#f8f9fa]/60 focus:ring-2 focus:ring-[#1b4b66]"
               placeholder="Enter password"
               required
             />
@@ -109,14 +106,14 @@ const SignupPage = () => {
           {/* Confirm Password */}
           <div>
             <label className="block font-semibold mb-1">
-              Confirm password:
+              Confirm Password:
             </label>
             <input
               type="password"
               name="confirmPassword"
               value={formData.confirmPassword}
               onChange={handleChange}
-              className="w-full px-4 py-2 border rounded bg-[#f8f9fa]/60 border border-transparent focus:outline-none focus:ring-2 focus:ring-[#1b4b66]"
+              className="w-full px-4 py-2 rounded bg-[#f8f9fa]/60 focus:ring-2 focus:ring-[#1b4b66]"
               placeholder="Re-enter password"
               required
             />
@@ -129,7 +126,7 @@ const SignupPage = () => {
               name="role"
               value={formData.role}
               onChange={handleChange}
-              className="w-full px-4 py-2 border rounded bg-[#f8f9fa]/60 border border-transparent focus:outline-none focus:ring-2 focus:ring-[#1b4b66]"
+              className="w-full px-4 py-2 rounded bg-[#f8f9fa]/60 focus:ring-2 focus:ring-[#1b4b66]"
               required
             >
               <option value="" disabled>

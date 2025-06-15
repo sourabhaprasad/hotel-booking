@@ -2,12 +2,13 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { createBooking } from "@lib/api";
 
 const BookingSection = ({ price, propertyId, maxGuests }) => {
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
   const [guests, setGuests] = useState(1);
-  const [userRole, setUserRole] = useState(""); // Assuming userRole is needed elsewhere
+  const [userRole, setUserRole] = useState("");
   const router = useRouter();
 
   useEffect(() => {
@@ -28,10 +29,10 @@ const BookingSection = ({ price, propertyId, maxGuests }) => {
         let discountMessage = "";
 
         if (diffDays >= 30) {
-          totalPrice = totalPrice * 0.8; // 20% discount
+          totalPrice *= 0.8;
           discountMessage = "20% discount applied";
         } else if (diffDays >= 7) {
-          totalPrice = totalPrice * 0.9; // 10% discount
+          totalPrice *= 0.9;
           discountMessage = "10% discount applied";
         }
 
@@ -44,29 +45,27 @@ const BookingSection = ({ price, propertyId, maxGuests }) => {
   const { totalPrice, discountMessage } = calculateTotalPrice();
 
   const handleBooking = async () => {
+    if (!guests || guests < 1) {
+      toast.error("Number of guests must be at least 1.");
+      return;
+    }
+
     const token = localStorage.getItem("token");
 
-    if (!token) {
+    if (!token || token === "null") {
       toast.error("❌ You must be signed in to book.");
+      return;
+    }
+
+    if (userRole !== "guest") {
+      toast.error("Only guests can book properties.");
       return;
     }
 
     const payload = { propertyId, checkIn, checkOut, guests };
 
     toast.promise(
-      fetch("http://localhost:5000/api/bookings", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      }).then(async (res) => {
-        const data = await res.json();
-
-        if (!res.ok) throw new Error(data.error || "Booking failed");
-
-        // Redirect after short delay
+      createBooking(payload, token).then(() => {
         setTimeout(() => {
           router.push(`/property/${propertyId}/confirmed`);
         }, 1000);
@@ -83,34 +82,34 @@ const BookingSection = ({ price, propertyId, maxGuests }) => {
     <div className="bg-[#1D84B5]/20 p-3 rounded space-y-2 mt-4">
       <div className="flex gap-4 flex-wrap items-center">
         <div className="flex items-center gap-2">
-          <label className="font-bold whitespace-nowrap">Check In:</label>
+          <label className="font-bold">Check In:</label>
           <input
             type="date"
-            className="bg-white px-2 py-1 rounded"
             value={checkIn}
             onChange={(e) => setCheckIn(e.target.value)}
+            className="bg-white px-2 py-1 rounded"
           />
         </div>
 
         <div className="flex items-center gap-2">
-          <label className="font-bold whitespace-nowrap">Check Out:</label>
+          <label className="font-bold">Check Out:</label>
           <input
             type="date"
-            className="bg-white px-2 py-1 rounded"
             value={checkOut}
             onChange={(e) => setCheckOut(e.target.value)}
+            className="bg-white px-2 py-1 rounded"
           />
         </div>
 
         <div className="flex items-center gap-2">
-          <label className="font-bold whitespace-nowrap">Guests:</label>
+          <label className="font-bold">Guests:</label>
           <input
             type="number"
             min={1}
             max={maxGuests}
-            className="bg-white px-2 py-1 rounded w-20"
             value={guests}
-            onChange={(e) => setGuests(parseInt(e.target.value))}
+            onChange={(e) => setGuests(e.target.value)}
+            className="bg-white px-2 py-1 rounded w-20"
           />
         </div>
       </div>

@@ -12,6 +12,11 @@ const PropertyPage = () => {
 
   useEffect(() => {
     if (!id) return;
+    const token = localStorage.getItem("token");
+    if (!token) {
+      toast.error("You must be logged in to book a property.");
+      return;
+    }
 
     const getProperty = async () => {
       try {

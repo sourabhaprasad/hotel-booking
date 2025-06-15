@@ -2,9 +2,6 @@ import Property from "../models/Property.js";
 
 export const createProperty = async (req, res) => {
   try {
-    console.log("Incoming body:", req.body);
-    console.log("Incoming files:", req.files); // <== debug this
-
     if (req.user.role !== "manager") {
       return res
         .status(403)
@@ -106,8 +103,6 @@ export const deleteProperty = async (req, res) => {
 
 // PUT: Update a property by ID
 export const updateProperty = async (req, res) => {
-  console.log("Request body:", req.body);
-
   try {
     const { id } = req.params;
 
@@ -156,8 +151,6 @@ export const updateProperty = async (req, res) => {
 };
 
 export const getPropertyById = async (req, res) => {
-  console.log("REQ.USER:", req.user); // temp log
-
   try {
     const { id } = req.params;
     const property = await Property.findById(id);
@@ -173,8 +166,6 @@ export const getPropertyById = async (req, res) => {
 
 // GET: Fetch properties by logged-in host (Property Manager)
 export const getPropertiesByHost = async (req, res) => {
-  console.log("Authenticated User:", req.user);
-
   try {
     const properties = await Property.find({ user: req.user.id }).sort({
       createdAt: -1,
