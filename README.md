@@ -231,8 +231,7 @@ Create shared components like:
 
 ## Future Enhancements
 
-- Admin dashboard
 - Payment gateway integration (e.g., Stripe)
-- Multi-language support
 - Host earnings analytics
 - Wishlists and Reviews
+- AI Integrations
