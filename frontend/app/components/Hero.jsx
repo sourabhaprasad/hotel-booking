@@ -27,7 +27,10 @@ const Hero = () => {
               space to share — StayNest makes it easy to connect, book, and feel
               at home.
             </p>
-            <Button onClick={() => router.push("/all-properties")}>
+            <Button
+              onClick={() => router.push("/all-properties")}
+              className="cursor-pointer"
+            >
               Book Your Stay
             </Button>
           </div>
