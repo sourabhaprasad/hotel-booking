@@ -81,36 +81,45 @@ const BookingSection = ({ price, propertyId, maxGuests }) => {
 
   return (
     <div className="bg-[#1D84B5]/20 p-3 rounded space-y-2 mt-4">
-      <div className="flex gap-4 flex-wrap items-center">
-        <div className="flex items-center gap-2">
-          <label className="font-bold">Check In:</label>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {/* Check-in */}
+        <div className="flex justify-between items-center gap-2">
+          <label className="font-semibold w-24">Check In:</label>
           <input
             type="date"
             value={checkIn}
+            min={new Date().toISOString().split("T")[0]}
             onChange={(e) => setCheckIn(e.target.value)}
-            className="bg-white px-2 py-1 rounded"
+            className="flex-1 bg-white px-2 py-1 rounded border border-gray-300 focus:outline-none"
           />
         </div>
 
-        <div className="flex items-center gap-2">
-          <label className="font-bold">Check Out:</label>
+        {/* Check-out */}
+        <div className="flex justify-between items-center gap-2">
+          <label className="font-semibold w-24">Check Out:</label>
           <input
             type="date"
             value={checkOut}
+            min={checkIn || new Date().toISOString().split("T")[0]}
             onChange={(e) => setCheckOut(e.target.value)}
-            className="bg-white px-2 py-1 rounded"
+            className="flex-1 bg-white px-2 py-1 rounded border border-gray-300 focus:outline-none"
           />
         </div>
 
-        <div className="flex items-center gap-2">
-          <label className="font-bold">Guests:</label>
+        {/* Guests */}
+        <div className="flex justify-between items-center gap-2">
+          <label className="font-semibold w-24">Guests:</label>
           <input
             type="number"
             min={1}
             max={maxGuests}
             value={guests}
-            onChange={(e) => setGuests(e.target.value)}
-            className="bg-white px-2 py-1 rounded w-20"
+            onChange={(e) => {
+              const val = Number(e.target.value);
+              if (val <= maxGuests) setGuests(val);
+              else toast.error(`Max guests allowed: ${maxGuests}`);
+            }}
+            className="flex-1 bg-white px-2 py-1 rounded border border-gray-300 w-20 focus:outline-none"
           />
         </div>
       </div>

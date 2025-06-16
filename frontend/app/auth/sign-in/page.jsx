@@ -15,54 +15,61 @@ const SignInPage = () => {
     password: "",
   });
 
+  const [loading, setLoading] = useState(false);
+
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     try {
       const { user, token } = await signInUser(formData);
 
-      // ✅ Save to localStorage (optional)
       localStorage.setItem("homestayToken", token);
       localStorage.setItem("token", token);
 
-      // ✅ Tell context to update the user
       login(user);
 
-      toast.success("Logged in successfully!", { position: "top-center" });
+      toast.success("✅ Logged in successfully!", { position: "top-center" });
+
       setTimeout(() => {
-        toast("Redirecting...", {
-          icon: "➡️",
-          position: "top-center",
-        });
+        toast("➡️ Redirecting...", { position: "top-center" });
 
         setTimeout(() => {
-          if (user.role === "manager") {
-            router.push("/dashboard/host");
-          } else {
-            router.push("/all-properties");
-          }
+          router.push(
+            user.role === "manager" ? "/dashboard/host" : "/all-properties"
+          );
         }, 1000);
       }, 1500);
     } catch (err) {
-      toast.error(err.response?.data?.error || "Login failed", {
+      toast.error(err?.response?.data?.error || "Login failed", {
         position: "top-center",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white">
+    <div className="flex flex-col bg-white py-12 px-4 sm:px-6 items-center justify-center min-h-[80dvh]">
       <Toaster />
-      <div className="bg-[#cae5f1] p-10 w-full max-w-md rounded shadow-md">
-        <h2 className="text-2xl font-semibold text-center mb-6">Sign In</h2>
+      <div className="bg-[#cae5f1] p-4 sm:p-6 md:p-8 w-full max-w-xs sm:max-w-sm md:max-w-md rounded-xl shadow-md">
+        <h2 className="text-xl sm:text-2xl font-semibold text-center mb-6">
+          Sign In
+        </h2>
 
         <form className="space-y-5" onSubmit={handleSubmit}>
           <div>
-            <label htmlFor="email" className="block font-semibold mb-1">
+            <label
+              htmlFor="email"
+              className="block font-semibold text-sm sm:text-base mb-1"
+            >
               Email:
             </label>
             <input
@@ -78,11 +85,15 @@ const SignInPage = () => {
           </div>
 
           <div>
-            <label htmlFor="password" className="block font-semibold mb-1">
+            <label
+              htmlFor="password"
+              className="block font-semibold text-sm sm:text-base mb-1"
+            >
               Password:
             </label>
             <input
               type="password"
+              id="password"
               name="password"
               value={formData.password}
               onChange={handleChange}
@@ -95,14 +106,19 @@ const SignInPage = () => {
           <div className="text-center">
             <button
               type="submit"
-              className="bg-[#1b4b66] text-white px-6 py-2 rounded font-semibold hover:bg-[#163b52]"
+              disabled={loading}
+              className={`w-full sm:w-auto px-4 sm:px-6 py-1.5 sm:py-2 rounded font-semibold text-sm sm:text-base text-white transition ${
+                loading
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-[#1b4b66] hover:bg-[#163b52]"
+              }`}
             >
-              Login
+              {loading ? "Logging in..." : "Login"}
             </button>
           </div>
         </form>
 
-        <p className="text-center mt-4 text-sm font-medium">
+        <p className="text-center mt-4 text-xs sm:text-sm font-medium">
           Not registered?{" "}
           <Link
             href="/auth/sign-up"

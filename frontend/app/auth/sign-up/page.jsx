@@ -55,15 +55,17 @@ const SignupPage = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-white py-10">
+    <div className="flex flex-col bg-white py-12 px-4 sm:px-6 items-center justify-center min-h-screen">
       <Toaster />
-      <div className="bg-[#cae5f1] p-10 w-full max-w-lg rounded shadow-md mx-auto">
-        <h2 className="text-2xl font-semibold text-center mb-6">Sign Up</h2>
+      <div className="bg-[#cae5f1] p-6 sm:p-8 md:p-10 w-full max-w-sm sm:max-w-md md:max-w-lg rounded-xl shadow-md mx-auto">
+        <h2 className="text-xl sm:text-2xl font-semibold text-center mb-4 sm:mb-6">
+          Sign Up
+        </h2>
 
         <form className="space-y-5" onSubmit={handleSubmit}>
           {/* Name */}
           <div>
-            <label htmlFor="name" className="block font-semibold mb-1">
+            <label htmlFor="name" className="block text-sm font-medium mb-1">
               Name:
             </label>
             <input
@@ -72,7 +74,7 @@ const SignupPage = () => {
               name="name"
               value={formData.name}
               onChange={handleChange}
-              className="w-full px-4 py-2 rounded bg-[#f8f9fa]/60 focus:ring-2 focus:ring-[#1b4b66]"
+              className="w-full px-3 py-1.5 rounded bg-[#f8f9fa]/60 text-sm focus:ring-2 focus:ring-[#1b4b66]"
               placeholder="Enter your name"
               required
             />
@@ -80,7 +82,7 @@ const SignupPage = () => {
 
           {/* Email */}
           <div>
-            <label htmlFor="email" className="block font-semibold mb-1">
+            <label htmlFor="email" className="block text-sm font-medium mb-1">
               Email:
             </label>
             <input
@@ -89,7 +91,7 @@ const SignupPage = () => {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className="w-full px-4 py-2 rounded bg-[#f8f9fa]/60 focus:ring-2 focus:ring-[#1b4b66]"
+              className="w-full px-3 py-1.5 rounded bg-[#f8f9fa]/60 text-sm focus:ring-2 focus:ring-[#1b4b66]"
               placeholder="Enter your email"
               required
             />
@@ -97,7 +99,10 @@ const SignupPage = () => {
 
           {/* Password */}
           <div>
-            <label htmlFor="password" className="block font-semibold mb-1">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium mb-1"
+            >
               Password:
             </label>
             <input
@@ -106,7 +111,7 @@ const SignupPage = () => {
               name="password"
               value={formData.password}
               onChange={handleChange}
-              className="w-full px-4 py-2 rounded bg-[#f8f9fa]/60 focus:ring-2 focus:ring-[#1b4b66]"
+              className="w-full px-3 py-1.5 rounded bg-[#f8f9fa]/60 text-sm focus:ring-2 focus:ring-[#1b4b66]"
               placeholder="Enter password"
               required
             />
@@ -116,7 +121,7 @@ const SignupPage = () => {
           <div>
             <label
               htmlFor="confirmPassword"
-              className="block font-semibold mb-1"
+              className="block text-sm font-medium mb-1"
             >
               Confirm Password:
             </label>
@@ -126,7 +131,7 @@ const SignupPage = () => {
               name="confirmPassword"
               value={formData.confirmPassword}
               onChange={handleChange}
-              className="w-full px-4 py-2 rounded bg-[#f8f9fa]/60 focus:ring-2 focus:ring-[#1b4b66]"
+              className="w-full px-3 py-1.5 rounded bg-[#f8f9fa]/60 text-sm focus:ring-2 focus:ring-[#1b4b66]"
               placeholder="Re-enter password"
               required
             />
@@ -134,7 +139,7 @@ const SignupPage = () => {
 
           {/* User Role */}
           <div>
-            <label htmlFor="role" className="block font-semibold mb-1">
+            <label htmlFor="role" className="block text-sm font-medium mb-1">
               Role:
             </label>
             <select
@@ -142,7 +147,7 @@ const SignupPage = () => {
               name="role"
               value={formData.role}
               onChange={handleChange}
-              className="w-full px-4 py-2 rounded bg-[#f8f9fa]/60 focus:ring-2 focus:ring-[#1b4b66]"
+              className="w-full px-3 py-1.5 rounded bg-[#f8f9fa]/60 text-sm focus:ring-2 focus:ring-[#1b4b66]"
               required
             >
               <option value="" disabled>
@@ -157,14 +162,14 @@ const SignupPage = () => {
           <div className="text-center">
             <button
               type="submit"
-              className="bg-[#1b4b66] text-white px-6 py-2 rounded font-semibold hover:bg-[#163b52]/40"
+              className="bg-[#1b4b66] text-white px-4 py-2 rounded text-sm font-medium hover:bg-[#163b52]/40"
             >
               Sign Up!
             </button>
           </div>
         </form>
 
-        <p className="text-center mt-4 text-sm font-medium">
+        <p className="text-center mt-4 text-xs sm:text-sm font-medium">
           Registered Already?{" "}
           <Link
             href="/auth/sign-in"

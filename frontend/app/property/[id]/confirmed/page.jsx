@@ -29,11 +29,22 @@ const BookingConfirmedPage = () => {
     getBooking();
   }, [id]);
 
-  if (loading) return <div className="p-6">Loading booking details...</div>;
-  if (!booking) return <div className="p-6">Booking not found.</div>;
+  if (loading)
+    return (
+      <div className="p-4 sm:p-6 text-center text-gray-600">
+        Loading booking details...
+      </div>
+    );
+
+  if (!booking)
+    return (
+      <div className="p-4 sm:p-6 text-center text-red-500">
+        Booking not found.
+      </div>
+    );
 
   return (
-    <div className="p-6">
+    <div className="px-4 py-6 sm:px-8 md:px-16 max-w-4xl mx-auto">
       <BookingConfirmation booking={booking} />
     </div>
   );

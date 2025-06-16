@@ -4,7 +4,7 @@ import Link from "next/link";
 
 const HostSidebar = () => {
   return (
-    <div className="bg-white rounded p-4 space-y-4 shadow">
+    <div className="bg-[#f0f9fc] border border-[#cbe6ef] rounded-xl p-4 space-y-4 shadow">
       <h2 className="text-lg font-bold text-[#265073]">Host Menu</h2>
       <nav className="flex flex-col space-y-2">
         <Link href="/dashboard/host/properties" className="hover:underline">

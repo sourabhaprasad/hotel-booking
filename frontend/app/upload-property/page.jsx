@@ -1,4 +1,5 @@
 "use client";
+
 import { useForm } from "react-hook-form";
 import toast, { Toaster } from "react-hot-toast";
 import { useState, useRef, useEffect } from "react";
@@ -45,23 +46,18 @@ export default function ListPropertyForm() {
       }
 
       const formData = new FormData();
-
       Object.entries(data).forEach(([key, value]) => {
-        if (key !== "images") {
-          formData.append(key, value);
-        }
+        if (key !== "images") formData.append(key, value);
       });
 
-      selectedAmenities.forEach((amenity) => {
-        formData.append("amenities[]", amenity);
-      });
-
+      selectedAmenities.forEach((amenity) =>
+        formData.append("amenities[]", amenity)
+      );
       for (const image of data.images) {
         formData.append("images", image);
       }
 
       const token = localStorage.getItem("homestayToken");
-
       const submissionPromise = createProperty(formData, token);
 
       await toast.promise(submissionPromise, {
@@ -78,19 +74,13 @@ export default function ListPropertyForm() {
     }
   };
 
-  // Close amenities dropdown on outside click
   const amenitiesRef = useRef(null);
-
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        amenitiesRef.current &&
-        !amenitiesRef.current.contains(event.target)
-      ) {
+    const handleClickOutside = (e) => {
+      if (amenitiesRef.current && !amenitiesRef.current.contains(e.target)) {
         setShowAmenities(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
@@ -98,13 +88,15 @@ export default function ListPropertyForm() {
   const watchImages = watch("images");
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-10 px-4">
+    <div className="min-h-screen flex items-center justify-center py-6 px-4 sm:px-6 lg:px-8 overflow-y-auto">
       <Toaster />
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="bg-[#53A2BE]/30 rounded-xl p-10 w-full max-w-3xl space-y-6 shadow-xl"
+        className="bg-[#53A2BE]/30 rounded-xl px-4 py-6 sm:px-8 sm:py-10 w-full max-w-3xl space-y-6 shadow-xl"
       >
-        <h2 className="text-center text-2xl font-bold">List your property</h2>
+        <h2 className="text-center text-xl sm:text-2xl font-bold">
+          List your property
+        </h2>
 
         {/* Text Fields */}
         {[
@@ -149,11 +141,17 @@ export default function ListPropertyForm() {
           },
         ].map(({ name, label, placeholder }) => (
           <div key={name}>
-            <label className="font-semibold">{label}</label>
+            <label
+              htmlFor={name}
+              className="block font-semibold mb-1 text-sm sm:text-base"
+            >
+              {label}
+            </label>
             <input
+              id={name}
               {...register(name, { required: `${label} is required` })}
               placeholder={placeholder}
-              className="w-full px-3 py-2 bg-white/30 rounded-md focus:outline-none"
+              className="w-full px-3 py-2 text-sm sm:text-base bg-white/30 rounded-md focus:outline-none placeholder:text-gray-600 placeholder:opacity-80"
             />
             {errors[name] && (
               <p className="text-red-500 text-sm mt-1">
@@ -165,15 +163,22 @@ export default function ListPropertyForm() {
 
         {/* Property Type */}
         <div>
-          <label htmlFor="property-type" className="font-semibold">
+          <label
+            htmlFor="type"
+            className="block font-semibold mb-1 text-sm sm:text-base"
+          >
             Type:
           </label>
-          <div className="flex gap-6 mt-2">
+          <div className="flex flex-wrap gap-4">
             {["Villa", "House", "Apartment"].map((type) => (
-              <label key={type} className="flex items-center gap-1">
+              <label
+                key={type}
+                htmlFor={`type-${type}`}
+                className="flex items-center gap-2 text-sm sm:text-base cursor-pointer"
+              >
                 <input
-                  id="property-type"
                   type="radio"
+                  id={`type-${type}`}
                   value={type}
                   {...register("type", {
                     required: "Select one type",
@@ -191,11 +196,14 @@ export default function ListPropertyForm() {
 
         {/* Amenities Dropdown */}
         <div className="relative" ref={amenitiesRef}>
-          <label htmlFor="amenities-dropdown" className="font-semibold">
+          <label
+            htmlFor="amenities"
+            className="block font-semibold mb-1 text-sm sm:text-base"
+          >
             Amenities:
           </label>
           <button
-            id="amenities-dropdown"
+            id="amenities"
             type="button"
             onClick={() => setShowAmenities((prev) => !prev)}
             className="w-full mt-2 bg-white/30 px-4 py-2 rounded-md text-left"
@@ -205,7 +213,7 @@ export default function ListPropertyForm() {
               : "Select Amenities"}
           </button>
           {showAmenities && (
-            <div className="absolute z-10 mt-1 bg-white/90 rounded-md shadow-md p-4 grid grid-cols-2 gap-2 max-h-60 overflow-y-scroll w-full">
+            <div className="absolute z-10 mt-1 bg-white/90 rounded-md shadow-md p-4 grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-60 overflow-y-scroll w-full">
               {[
                 "Parking",
                 "Wi-Fi",
@@ -226,7 +234,10 @@ export default function ListPropertyForm() {
                 "Board Games",
                 "House Keeping",
               ].map((amenity) => (
-                <label key={amenity} className="text-sm">
+                <label
+                  key={amenity}
+                  className="text-sm cursor-pointer flex items-center"
+                >
                   <input
                     type="checkbox"
                     value={amenity}
@@ -243,10 +254,16 @@ export default function ListPropertyForm() {
 
         {/* Image Upload */}
         <div>
-          <label htmlFor="upload-images" className="font-semibold block mb-2">
+          <label
+            htmlFor="images"
+            className="block font-semibold mb-2 text-sm sm:text-base"
+          >
             Upload images:
           </label>
-          <label className="flex items-center justify-center gap-2 px-4 py-3 bg-white/30 rounded-md cursor-pointer hover:bg-white/40 transition-all">
+          <label
+            htmlFor="images"
+            className="flex items-center justify-center gap-2 px-4 py-3 bg-white/30 rounded-md cursor-pointer hover:bg-white/40 transition-all text-sm sm:text-base"
+          >
             <UploadCloud className="w-5 h-5" />
             <span>
               {watchImages && watchImages.length > 0
@@ -256,22 +273,29 @@ export default function ListPropertyForm() {
                   })()
                 : "Choose images"}
             </span>
-            <input
-              id="upload-images"
-              type="file"
-              {...register("images", {
-                required: "At least one image is required",
-              })}
-              accept="image/*"
-              multiple
-              className="hidden"
-            />
           </label>
+          <input
+            id="images"
+            type="file"
+            {...register("images", {
+              required: "At least one image is required",
+            })}
+            accept="image/*"
+            multiple
+            className="hidden"
+          />
+          {errors.images && (
+            <p className="text-red-500 text-sm mt-1">
+              {errors.images?.message}
+            </p>
+          )}
         </div>
 
         {/* Submit */}
         <div className="text-center">
-          <Button type="submit">Submit</Button>
+          <Button type="submit" className="px-6 py-2 text-sm sm:text-base">
+            Submit
+          </Button>
         </div>
       </form>
     </div>

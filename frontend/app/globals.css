@@ -3,8 +3,27 @@
 body {
   margin: 0;
   padding: 0;
+  overflow-x: hidden;
+}
+
+:root {
+  --navbar-height: 50px;
 }
 
 .hover-text-shadow:hover {
   text-shadow: 1px 1px 5px black;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
 }

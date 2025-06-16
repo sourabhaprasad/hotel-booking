@@ -8,6 +8,7 @@ import { fetchMyProperties, deletePropertyById } from "@lib/api";
 const PropertyList = () => {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [confirmDeleteId, setConfirmDeleteId] = useState(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -27,18 +28,17 @@ const PropertyList = () => {
     loadProperties();
   }, []);
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this property?"))
-      return;
-
+  const handleDelete = async () => {
     try {
       const token = localStorage.getItem("token");
-      await deletePropertyById(id, token);
-      setProperties((prev) => prev.filter((p) => p._id !== id));
+      await deletePropertyById(confirmDeleteId, token);
+      setProperties((prev) => prev.filter((p) => p._id !== confirmDeleteId));
       toast.success("Property deleted successfully");
     } catch (err) {
       console.error("Delete error:", err);
       toast.error("Failed to delete property");
+    } finally {
+      setConfirmDeleteId(null);
     }
   };
 
@@ -52,10 +52,11 @@ const PropertyList = () => {
     return <div className="p-6">No properties listed yet.</div>;
 
   return (
-    <div className="bg-[#d1ecf3] min-h-screen p-6">
-      <Toaster position="top-right" reverseOrder={false} />
+    <div className="bg-[#d1ecf3] min-h-screen p-6 relative">
+      <Toaster position="top-right" />
+
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-bold">All Listings</h2>
+        <h2 className="text-lg sm:text-xl font-bold">All Listings</h2>
         <button
           onClick={() => router.push("/upload-property")}
           className="bg-[#0b4c61] hover:bg-[#093947] transition text-white px-3 py-1 text-sm rounded"
@@ -93,7 +94,7 @@ const PropertyList = () => {
                 )}
               </div>
 
-              <div className="flex-1 space-y-1 text-sm">
+              <div className="flex-1 space-y-1 text-xs sm:text-sm leading-snug">
                 <p>
                   <strong>Title:</strong> {property.title}
                 </p>
@@ -131,13 +132,13 @@ const PropertyList = () => {
             <div className="flex justify-center gap-10 mt-4">
               <button
                 onClick={() => handleUpdate(property._id)}
-                className="bg-[#0b4c61] hover:bg-[#093947] transition text-white px-4 py-2 text-sm rounded"
+                className="bg-[#0b4c61] hover:bg-[#093947] transition text-white px-4 py-2 text-xs rounded"
               >
                 Update Property
               </button>
               <button
-                onClick={() => handleDelete(property._id)}
-                className="bg-[#0b4c61] hover:bg-red-600 transition text-white px-4 py-2 text-sm rounded"
+                onClick={() => setConfirmDeleteId(property._id)}
+                className="bg-[#0b4c61] hover:bg-red-600 transition text-white px-4 py-2 text-xs rounded"
               >
                 Delete Property
               </button>
@@ -145,6 +146,30 @@ const PropertyList = () => {
           </div>
         ))}
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {confirmDeleteId && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded shadow-xl text-center w-[90%] max-w-sm space-y-4">
+            <h2 className="text-lg font-semibold">Confirm Deletion</h2>
+            <p>Are you sure you want to delete this property?</p>
+            <div className="flex justify-center gap-4 mt-4">
+              <button
+                onClick={handleDelete}
+                className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition"
+              >
+                Yes, Delete
+              </button>
+              <button
+                onClick={() => setConfirmDeleteId(null)}
+                className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400 transition"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

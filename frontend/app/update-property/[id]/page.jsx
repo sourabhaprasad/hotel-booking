@@ -119,7 +119,9 @@ const UpdateProperty = ({ params }) => {
         onSubmit={handleSubmit(onSubmit)}
         className="bg-[#53A2BE]/30 rounded-xl p-10 w-full max-w-3xl space-y-6 shadow-xl"
       >
-        <h2 className="text-center text-2xl font-bold">Update Property</h2>
+        <h2 className="text-center text-xl sm:text-2xl font-bold ">
+          Update Property
+        </h2>
 
         {/* Text Fields */}
         {[
@@ -138,21 +140,27 @@ const UpdateProperty = ({ params }) => {
           { name: "price", label: "Price", placeholder: "Enter price" },
         ].map(({ name, label, placeholder }) => (
           <div key={name}>
-            <label htmlFor={name} className="font-semibold">
+            <label
+              htmlFor={name}
+              className="block font-semibold mb-1 text-sm sm:text-base"
+            >
               {label}
             </label>
             <input
               id={name}
               {...register(name, { required: `${label} is required` })}
               placeholder={placeholder}
-              className="w-full px-3 py-2 bg-white/30 rounded-md focus:outline-none"
+              className="w-full px-3 py-2 text-sm sm:text-base bg-white/30 rounded-md focus:outline-none placeholder:text-gray-600 placeholder:opacity-80"
             />
           </div>
         ))}
 
         {/* Type */}
         <div>
-          <label htmlFor="property-type" className="font-semibold">
+          <label
+            htmlFor="property-type"
+            className="block font-semibold mb-1 text-sm sm:text-base"
+          >
             Type:
           </label>
           <div id="property-type" className="flex gap-6 mt-2">

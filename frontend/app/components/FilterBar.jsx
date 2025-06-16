@@ -81,7 +81,7 @@ const FilterBar = ({ onFilterChange }) => {
 
   return (
     <form onSubmit={handleFilter}>
-      <div className="w-full p-4 bg-[#1D84B566] grid grid-cols-6 gap-4 rounded-md">
+      <div className="w-full p-4 bg-[#1D84B566] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 rounded-md">
         <div>
           <label htmlFor="city" className="block font-semibold mb-1">
             City:
@@ -167,7 +167,7 @@ const FilterBar = ({ onFilterChange }) => {
               : "Select Amenities"}
           </button>
           {showAmenities && (
-            <div className="absolute z-20 mt-1 bg-white/90 shadow-lg p-4 grid grid-cols-2 gap-2 max-h-60 overflow-y-auto w-full">
+            <div className="absolute z-20 mt-1 bg-white/90 shadow-lg p-4 grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-60 overflow-y-auto w-full text-black rounded-md">
               {amenitiesList.map((amenity) => (
                 <label
                   key={amenity}
@@ -186,7 +186,7 @@ const FilterBar = ({ onFilterChange }) => {
         </div>
       </div>
 
-      <div className="col-span-6 flex justify-center mt-4 gap-4">
+      <div className="col-span-full flex flex-col sm:flex-row justify-center mt-4 gap-3 sm:gap-4">
         <button
           type="submit"
           className="bg-[#1D84B5] hover:bg-teal-700 text-white px-6 py-2 rounded-md font-semibold transition duration-200"
