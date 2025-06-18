@@ -1,3 +1,59 @@
+```mermaid
+graph TD
+
+    %% User Input
+    A[User Inputs Research Paper Title] --> B[Text Preprocessing]
+
+    %% Preprocessing Details
+    B --> B1[Lowercasing, Punctuation Removal]
+    B1 --> B2[Stopword Removal & Tokenization]
+    B2 --> C[Sentence Embedding]
+
+    %% Embedding
+    C --> C1[MiniLM-L6-v2 Model]
+    C1 --> C2[Generate Vector Embedding]
+
+    %% Cosine Similarity Matching
+    C2 --> D[Load Dataset Embeddings]
+    D --> E[Compute Cosine Similarity]
+    E --> F[Sort by Similarity Score]
+    F --> G[Top 5 Paper Recommendations]
+
+    %% Subject Classification
+    C2 --> H[Subject Area Classification]
+    H --> H1[Logistic Regression Classifier]
+    H1 --> H2[Predict Academic Domain]
+
+    %% Output
+    G --> I[Display Recommendations to User]
+    H2 --> I
+
+    %% Future Scope
+    I --> J[Collect Optional User Feedback]
+    J --> K[Feedback-Driven Model Tuning]
+
+    %% Styling for Clean Look
+    style A fill:#2c3e50,stroke:#34495e,stroke-width:2px,color:#fff
+    style B fill:#3498db,stroke:#2980b9,stroke-width:2px,color:#fff
+    style B1 fill:#2c3e50,stroke:#34495e,stroke-width:2px,color:#fff
+    style B2 fill:#2c3e50,stroke:#34495e,stroke-width:2px,color:#fff
+    style C fill:#3498db,stroke:#2980b9,stroke-width:2px,color:#fff
+    style C1 fill:#2c3e50,stroke:#34495e,stroke-width:2px,color:#fff
+    style C2 fill:#2c3e50,stroke:#34495e,stroke-width:2px,color:#fff
+    style D fill:#3498db,stroke:#2980b9,stroke-width:2px,color:#fff
+    style E fill:#2c3e50,stroke:#34495e,stroke-width:2px,color:#fff
+    style F fill:#2c3e50,stroke:#34495e,stroke-width:2px,color:#fff
+    style G fill:#3498db,stroke:#2980b9,stroke-width:2px,color:#fff
+    style H fill:#3498db,stroke:#2980b9,stroke-width:2px,color:#fff
+    style H1 fill:#2c3e50,stroke:#34495e,stroke-width:2px,color:#fff
+    style H2 fill:#2c3e50,stroke:#34495e,stroke-width:2px,color:#fff
+    style I fill:#3498db,stroke:#2980b9,stroke-width:2px,color:#fff
+    style J fill:#2c3e50,stroke:#34495e,stroke-width:2px,color:#fff
+    style K fill:#3498db,stroke:#2980b9,stroke-width:2px,color:#fff
+```
+
+
+
 # 🏡 StayNest – Premium Homestay Booking Platform
 
 StayNest is a full-stack, responsive web application designed to simplify the discovery and booking of homestays. Built with a focus on scalability and user experience, it supports role-based access for guests and property managers, secure JWT-based authentication, real-time availability checks, and robust CRUD operations for listings and bookings. Whether you're implementing features for hosts or enhancing the guest booking flow, StayNest offers a modular, API-driven architecture that makes extension and maintenance straightforward.
